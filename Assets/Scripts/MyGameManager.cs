@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MyDataBase;
+using QFramework;
 
 public class MyGameManager : MySingle<MyGameManager>
 {
-    public void Notify()
-    {
 
+    void Start()
+    {
+        MyLoadDataManager.Instance.LoadDialogueList("");
     }
+
 }
