@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public static class MyLoad 
 {
     public static GameObject LoadGamepbject(string path)
     {
-        path = Application.dataPath + path;
-        GameObject gameObject = Resources.Load(path) as GameObject;
-        return gameObject;
+        Debug.Log(path);
+        GameObject go = GameObject.Instantiate(Resources.Load(path) as GameObject);
+        return go;
     }
 }

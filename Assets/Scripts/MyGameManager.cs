@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MyDataBase;
 using QFramework;
 
 public class MyGameManager : MySingle<MyGameManager>
@@ -9,7 +8,8 @@ public class MyGameManager : MySingle<MyGameManager>
 
     void Start()
     {
-        MyLoadDataManager.Instance.LoadDialogueList("");
+        //MyLoadDataManager.Instance.LoadDialogueList();
+        DialogueManager.Instance.InitDialogueGroup("301102");
     }
 
 }

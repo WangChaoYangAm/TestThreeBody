@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UIManager : MySingle<UIManager>
@@ -14,7 +15,8 @@ public class UIManager : MySingle<UIManager>
         {
             return _allWindowDic[windowNmae];
         }
-        MyBaseWindow windowBase = MyLoad.LoadGamepbject(windowNmae).GetComponent<MyBaseWindow>();
+        string path = "UIPrefabs/" + windowNmae;
+        MyBaseWindow windowBase = MyLoad.LoadGamepbject(path).GetComponent<MyBaseWindow>();
         if (windowBase == null) Debug.LogError("未加载到的窗口为" + windowNmae);//MyBaseWindow子类能否获取不一定
         else
         {
@@ -33,6 +35,9 @@ public class UIManager : MySingle<UIManager>
                     windowBase.transform.SetParent(_rootTop);
                     break;
             }
+            var rect = windowBase.GetComponent<RectTransform>();
+            rect.anchoredPosition3D = Vector3.zero;
+            //rect.rect = Vector2.zero;
         }
         return windowBase;
     }

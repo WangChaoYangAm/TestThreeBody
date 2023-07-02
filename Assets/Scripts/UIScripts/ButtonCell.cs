@@ -6,7 +6,9 @@ using UnityEngine.UI;
 
 public class ButtonCell : MonoBehaviour
 {
+    [SerializeField]
     private Button _btn;
+    [SerializeField]
     private Text _textName;
     public Action OnClickAction;
     private void Awake()
@@ -19,6 +21,7 @@ public class ButtonCell : MonoBehaviour
         {
             _btn.onClick.RemoveAllListeners();
             _btn.onClick.AddListener(OnClick);
+            if(_textName)
             _textName.text = name;
         }
         OnClickAction = action;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEngine.UIElements;
 
 public class UIDialogueWindow : MyBaseWindow
 {
@@ -10,25 +11,21 @@ public class UIDialogueWindow : MyBaseWindow
     private RectTransform _rootDialogue;
     [SerializeField]
     private GameObject _preCellDialogue;
-    //[SerializeField]
-    //private Button _btnLeft, _btnRight;
-    //[SerializeField]
-    //private Text _textLeft, _textRight;
+    [SerializeField]
+    private Text _textField;
     private MyDialogueBase _dialogueBase;
     public Action<EDialogueFunc, string> OnClickAction;
-    // Start is called before the first frame update
-    void Start()
+    public Action OnEndAction;
+    public void Init(Action EndAction, Action<EDialogueFunc, string> ClickAction)
     {
-
+        ObjectPool.Instance.SetPrefab(_preCellDialogue);
+        OnEndAction = EndAction;
+        OnClickAction = ClickAction;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     public void UpdateDialogue(MyDialogueBase dialogueBase)
     {
+        if (dialogueBase == null) return;
         _dialogueBase = dialogueBase;
         //获取已有的子对象并回收
         var childs = MyFind.FindAllChild(_rootDialogue);
@@ -37,16 +34,22 @@ public class UIDialogueWindow : MyBaseWindow
             ObjectPool.Instance.RecycleObj(childs[i].gameObject);
             childs[i].gameObject.SetActive(false);
         }
-        //重新生成对话 更新文本 注册方法
+        _textField.text = _dialogueBase._dialogueText;
+        //重新生成对话选项 更新文本 注册方法
         var optionList = _dialogueBase._dialogueOptionList;
         for (int i = 0; i < optionList.Count; i++)
         {
             GameObject go = ObjectPool.Instance.GetObject(_preCellDialogue.name);
             go.SetActive(true);
-            go.GetComponent<ButtonCell>().Init(optionList[i]._btnDes, () => { OnClickAction?.Invoke(optionList[i]._function, optionList[i]._para); });
+            go.transform.SetParent(_rootDialogue);
+            var option = optionList[i];
+            go.GetComponent<ButtonCell>().Init(option._btnDes, () => { OnClickAction?.Invoke(option._function, option._para); });
         }
-
+        OnEndAction?.Invoke();
     }
-
+    public void ClearTextField()
+    {
+        _textField.text = string.Empty;
+    }
 
 }
