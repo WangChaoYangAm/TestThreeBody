@@ -5,11 +5,13 @@ using UnityEngine;
 using System;
 using System.Reflection;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 public class MyLoadDataManager : MySingle<MyLoadDataManager>
 {
     public string PATH_DIALOGUE = Application.streamingAssetsPath + "/NPC_Dialogue_Group/Excels/";
-    //private Dictionary<string,string>
+    public string PATH_QUESTS = Application.streamingAssetsPath + "/NPC_Dialogue_Group/Excels/";
+    private Dictionary<string, List<MyQuestBase>> _dicQuests = new Dictionary<string, List<MyQuestBase>>();
     public List<MyDialogueBase> LoadDialogueList(string key)
     {
         List<MyDialogueBase> dialogueList = new List<MyDialogueBase>();
@@ -72,6 +74,52 @@ public class MyLoadDataManager : MySingle<MyLoadDataManager>
             dialogueList.Add(@base);
         }
         return dialogueList;
+    }
+
+    public List<MyQuestBase> LoadQuestList(string key)
+    {
+        if(_dicQuests.ContainsKey(key)) return _dicQuests[key];
+        List<MyQuestBase> listQuests = new List<MyQuestBase>();
+        string path = PATH_QUESTS + key + ".xlsx";
+        var fields = GetFieldInfos("MyQuestBase");
+        foreach (var field in fields)
+        {
+            Debug.Log(field.Name);
+        }
+        DataSet dataset = ExcelRead.ReadExcel(path);
+        Dictionary<string, int> dicTitle = new Dictionary<string, int>();
+        for (int i = 0; i < dataset.Tables[0].Rows.Count; i++)
+        {
+            if (i == 0)
+            {
+                for (int j = 0; j < dataset.Tables[0].Columns.Count; j++)
+                {
+                    //记载excel表头及对应的列的序号
+                    int t = j;
+                    dicTitle.Add(dataset.Tables[0].Rows[i][j].ToString(), t);
+                }
+            }
+            if (i < 2)
+            {
+                continue;
+            }
+            var table = dataset.Tables[0].Rows[i];
+            //解析通用配置
+            MyQuestBase @base = new MyQuestBase()
+            {
+                _questId = table[dicTitle["ID"]].ToString(),
+                _questName = table[dicTitle["Name"]].ToString(),
+                _questDes = table[dicTitle["Description"]].ToString(),
+                _objectiveId = table[dicTitle["Objective_ID"]].ToString(),
+                _nextQuestId = table[dicTitle["Next"]].ToString(),
+                _questStatus = EQuestStatus.NotAccept,
+            };
+            //解析任务类型
+            @base._objectiveType = (EObjectiveType)Enum.Parse(typeof(EObjectiveType), table[dicTitle["Objective"]].ToString());
+            listQuests.Add(@base);
+        }
+        _dicQuests.Add(key, listQuests);
+        return _dicQuests[key];
     }
     public FieldInfo[] GetFieldInfos(string key)
     {

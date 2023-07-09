@@ -29,18 +29,12 @@ public class DialogueManager : MySingle<DialogueManager>
     {
         _dialogueGroupList = MyLoadDataManager.Instance.LoadDialogueList(key);
 
-        //var go = MyLoad.LoadGamepbject("UIPrefabs/" + EWindowUI.UIDialogue.ToString());
         _dialogueWindow = UIManager.Instance.LoadWindow(EWindowUI.UIDialogue.ToString()) as UIDialogueWindow;
         _dialogueWindow.Init(AutoNextDialogue, SwichDialogueList);
         _allowNextDialogue = true;
         //_dialogueWindow.OnClickAction = ;
         if (_dialogueGroupList.Count > 0)
         {
-            //_curGroupIndex = 1;
-            //_curDiaIndex = 0;
-            //_dialogueList = _dialogueGroupList.FindAll(t => _curGroupIndex.ToString() == t._groupId);
-            //_curDialogue = _dialogueList[_curDiaIndex];
-            //_dialogueWindow.UpdateDialogue(_curDialogue);
             SwitchDialogue(1, 0);
         }
     }

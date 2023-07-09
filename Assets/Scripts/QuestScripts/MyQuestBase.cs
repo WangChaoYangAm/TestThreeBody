@@ -16,6 +16,7 @@ public enum EQuestStatus
 }
 public enum EObjectiveType
 {
+    None,
     EnterArea,
     ExitArea,
     Dialogue,
