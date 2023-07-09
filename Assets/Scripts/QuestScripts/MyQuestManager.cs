@@ -7,7 +7,11 @@ using UnityEngine;
 /// </summary>
 public class MyQuestManager : MonoBehaviour
 {
-    public void LoadData(string path)
+    /// <summary>
+    /// 获取数据
+    /// </summary>
+    /// <param name="fileName">文件名</param>
+    public void LoadData(string fileName)
     {
 
     }
