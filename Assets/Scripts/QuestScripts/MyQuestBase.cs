@@ -23,7 +23,8 @@ public enum EObjectiveType
     Collect,
     Kill
 }
-public class MyQuestBase 
+[System.Serializable]
+public class MyQuestBase
 {
     public string _questId;
     public string _questName;
@@ -40,6 +41,10 @@ public class MyQuestBase
             return _questStatus == EQuestStatus.Submited;
         }
     }
+    public int GetCurAmount
+    {
+        get { return _curAmount; }
+    }
     public void InitQuest()
     {
         _questStatus = EQuestStatus.NotAccept;
@@ -54,7 +59,21 @@ public class MyQuestBase
         switch (status)
         {
             case EQuestStatus.NotAccept:
+                InitQuest();
                 _questStatus = EQuestStatus.Ongoing;
+                MyQuestManager.Instance.AddAction(true, _objectiveType, OnEndOperate);
+                break;
+            case EQuestStatus.Success:
+                MyQuestManager.Instance.AddAction(false, _objectiveType, OnEndOperate);
+                break;
+            case EQuestStatus.Failed:
+                MyQuestManager.Instance.AddAction(false, _objectiveType, OnEndOperate);
+                break;
+
+            case EQuestStatus.Submited:
+                if (_questStatus != EQuestStatus.Success && _questStatus != EQuestStatus.Failed)
+                    Debug.LogError("要提交的任务，状态存在问题，请检查");
+                _questStatus = EQuestStatus.Submited;
                 break;
         }
     }
@@ -63,7 +82,7 @@ public class MyQuestBase
     /// </summary>
     /// <param name="key"></param>
     /// <param name="amount"></param>
-    public virtual void OnEndOperate(string key,int amount)
+    public virtual void OnEndOperate(string key, int amount)
     {
         UpdateOperateAmount(key, amount);
     }

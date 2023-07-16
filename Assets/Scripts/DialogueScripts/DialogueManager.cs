@@ -29,7 +29,7 @@ public class DialogueManager : MySingle<DialogueManager>
     {
         _dialogueGroupList = MyLoadDataManager.Instance.LoadDialogueList(key);
 
-        _dialogueWindow = UIManager.Instance.LoadWindow(EWindowUI.UIDialogue.ToString()) as UIDialogueWindow;
+        _dialogueWindow = UIManager.Instance.LoadWindow(EWindowUI.UIDialogue) as UIDialogueWindow;
         _dialogueWindow.Init(AutoNextDialogue, SwichDialogueList);
         _allowNextDialogue = true;
         //_dialogueWindow.OnClickAction = ;

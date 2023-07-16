@@ -10,7 +10,7 @@ using Unity.VisualScripting;
 public class MyLoadDataManager : MySingle<MyLoadDataManager>
 {
     public string PATH_DIALOGUE = Application.streamingAssetsPath + "/NPC_Dialogue_Group/Excels/";
-    public string PATH_QUESTS = Application.streamingAssetsPath + "/NPC_Dialogue_Group/Excels/";
+    public string PATH_QUESTS = Application.streamingAssetsPath + "/QuestsFile/Excels/";
     private Dictionary<string, List<MyQuestBase>> _dicQuests = new Dictionary<string, List<MyQuestBase>>();
     public List<MyDialogueBase> LoadDialogueList(string key)
     {

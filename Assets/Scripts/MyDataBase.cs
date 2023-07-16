@@ -50,7 +50,8 @@ public enum EModule
 }
 public enum EWindowUI
 {
-    UIDialogue
+    UIDialogue,
+    UIQuests
 }
 
 

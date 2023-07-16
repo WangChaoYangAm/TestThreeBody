@@ -9,8 +9,9 @@ public class UIManager : MySingle<UIManager>
     [SerializeField]
     private Transform _rootNormal, _rootFixed, _rootPop, _rootTop;
 
-    public MyBaseWindow LoadWindow(string windowNmae)
+    public MyBaseWindow LoadWindow(EWindowUI eWindowUI)
     {
+        string windowNmae = eWindowUI.ToString();
         if (_allWindowDic.ContainsKey(windowNmae))
         {
             return _allWindowDic[windowNmae];
@@ -37,6 +38,8 @@ public class UIManager : MySingle<UIManager>
             }
             var rect = windowBase.GetComponent<RectTransform>();
             rect.anchoredPosition3D = Vector3.zero;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
             //rect.rect = Vector2.zero;
         }
         return windowBase;
