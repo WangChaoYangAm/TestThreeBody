@@ -8,11 +8,10 @@ using UnityEngine;
 public enum EQuestStatus
 {
     NotAccept,
-    Ongoing,
-    Success,
-    Failed,
-    NotSubmit,
-    Submited
+    Receiving,//进行中
+    Complete,//已完成但未提交
+    Failed,//失败
+    Submit,//已提交
 }
 public enum EObjectiveType
 {
@@ -38,7 +37,7 @@ public class MyQuestBase
     {
         get
         {
-            return _questStatus == EQuestStatus.Submited;
+            return _questStatus == EQuestStatus.Submit;
         }
     }
     public int GetCurAmount
@@ -60,20 +59,22 @@ public class MyQuestBase
         {
             case EQuestStatus.NotAccept:
                 InitQuest();
-                _questStatus = EQuestStatus.Ongoing;
+                _questStatus = EQuestStatus.Receiving;
                 MyQuestManager.Instance.AddAction(true, _objectiveType, OnEndOperate);
                 break;
-            case EQuestStatus.Success:
+            case EQuestStatus.Complete:
                 MyQuestManager.Instance.AddAction(false, _objectiveType, OnEndOperate);
+                //其实应该切换状态的，但配置文件中的相关配置有问题，所以暂时采用不更新状态
+                MyQuestManager.Instance.NextQuests();
                 break;
             case EQuestStatus.Failed:
                 MyQuestManager.Instance.AddAction(false, _objectiveType, OnEndOperate);
                 break;
 
-            case EQuestStatus.Submited:
-                if (_questStatus != EQuestStatus.Success && _questStatus != EQuestStatus.Failed)
+            case EQuestStatus.Submit:
+                if (_questStatus != EQuestStatus.Complete && _questStatus != EQuestStatus.Failed)
                     Debug.LogError("要提交的任务，状态存在问题，请检查");
-                _questStatus = EQuestStatus.Submited;
+                _questStatus = EQuestStatus.Submit;
                 break;
         }
     }
@@ -91,6 +92,11 @@ public class MyQuestBase
         if (key == _objectiveId)
         {
             _curAmount += amount;
+            //TODO 由于未配置需求数量，故暂时都采用1作为目标值
+            if(_curAmount > 1)
+            {
+                OnChangeQuestStatus(EQuestStatus.Complete);
+            }
         }
     }
 }

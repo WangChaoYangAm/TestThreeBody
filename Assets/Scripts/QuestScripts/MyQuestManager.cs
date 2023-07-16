@@ -36,6 +36,13 @@ public class MyQuestManager : MySingle<MyQuestManager>
         if (quest == null) Debug.LogError("未加载到任务id为" + questID);
         return quest;
     }
+    public void NextQuests()
+    {
+        //TODO 其实这里没有区分是哪个listGroup,错误的，因为id没改，所以后面还需要改，最好根据任务id来
+        string nextId = _curQuest._nextQuestId;
+        MyQuestBase quest = _mQuestList.Find(t => t._questId == nextId);
+        SetCurQuests(quest);
+    }
     #region 设置当前任务状态
     public void SetCurQuests(string questId)
     {
@@ -49,10 +56,11 @@ public class MyQuestManager : MySingle<MyQuestManager>
     {
         if (quest == null)
         {
-            Debug.LogError("设置的任务不能为null");
+            Debug.LogError("设置的任务不能为null,疑似存在错误");
             return;
         }
         _curQuest = quest;
+        if (_curQuest._questStatus != EQuestStatus.Receiving) { _curQuest.Accept(); }
         ((UIQuestsWindow)UIManager.Instance.LoadWindow(EWindowUI.UIQuests)).UpdateTextPanel(_curQuest);
 
     }
@@ -77,9 +85,9 @@ public class MyQuestManager : MySingle<MyQuestManager>
             _dicObservers[type] -= action;
         }
     }
-    public void UpdateQuestsObserver(EObjectiveType objectiveType,string objectiveNmae,int objectiveAmount)
+    public void UpdateQuestsObserver(EObjectiveType objectiveType, string objectiveNmae, int objectiveAmount)
     {
-        if (_dicObservers.ContainsKey(objectiveType))
+        if (_dicObservers.ContainsKey(objectiveType) && _dicObservers[objectiveType] != null)
         {
             _dicObservers[objectiveType](objectiveNmae, objectiveAmount);
         }

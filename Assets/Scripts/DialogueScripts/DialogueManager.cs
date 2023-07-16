@@ -24,13 +24,19 @@ public class DialogueManager : MySingle<DialogueManager>
     private bool _allowNextDialogue;
     private UIDialogueWindow _dialogueWindow;
 
-
+    /// <summary>
+    /// 传入对话组文件名，播放对应的对话
+    /// </summary>
+    /// <param name="key"></param>
     public void InitDialogueGroup(string key)
     {
         _dialogueGroupList = MyLoadDataManager.Instance.LoadDialogueList(key);
+        if (!_dialogueWindow)
+        {
+            _dialogueWindow = UIManager.Instance.LoadWindow(EWindowUI.UIDialogue) as UIDialogueWindow;
+            _dialogueWindow.Init(AutoNextDialogue, SwichDialogueList);
 
-        _dialogueWindow = UIManager.Instance.LoadWindow(EWindowUI.UIDialogue) as UIDialogueWindow;
-        _dialogueWindow.Init(AutoNextDialogue, SwichDialogueList);
+        }
         _allowNextDialogue = true;
         //_dialogueWindow.OnClickAction = ;
         if (_dialogueGroupList.Count > 0)
@@ -54,6 +60,7 @@ public class DialogueManager : MySingle<DialogueManager>
             else
             {
                 //对话结束
+                _dialogueWindow.ShowWindow(false);
                 Debug.Log("对话结束");
                 _allowNextDialogue = false;
                 _dialogueWindow.ClearTextField();
@@ -62,7 +69,7 @@ public class DialogueManager : MySingle<DialogueManager>
 
         }).SetDelay(_curDialogue == null ? 0 : _curDialogue._delayTime);
     }
-    private void SwitchDialogue(int groupIndex,int index)
+    private void SwitchDialogue(int groupIndex, int index)
     {
         _curGroupIndex = groupIndex;
         _curDiaIndex = index;

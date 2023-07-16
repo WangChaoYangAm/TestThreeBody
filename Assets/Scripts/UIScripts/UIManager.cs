@@ -40,7 +40,7 @@ public class UIManager : MySingle<UIManager>
             rect.anchoredPosition3D = Vector3.zero;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
-            //rect.rect = Vector2.zero;
+            _allWindowDic.Add(windowNmae, windowBase);
         }
         return windowBase;
     }

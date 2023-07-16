@@ -11,17 +11,19 @@ public class MyLoadDataManager : MySingle<MyLoadDataManager>
 {
     public string PATH_DIALOGUE = Application.streamingAssetsPath + "/NPC_Dialogue_Group/Excels/";
     public string PATH_QUESTS = Application.streamingAssetsPath + "/QuestsFile/Excels/";
+    public string PATH_NPC_DIALOGUE_CONFIG = Application.streamingAssetsPath + "/NPC_Dialogue_AllConfigs/Excels/NPC_Dialogue.xlsx";
     private Dictionary<string, List<MyQuestBase>> _dicQuests = new Dictionary<string, List<MyQuestBase>>();
+    private Dictionary<string, Npc_DialogueConfig> _dicNpcDialogueConfig = new Dictionary<string, Npc_DialogueConfig>();
     public List<MyDialogueBase> LoadDialogueList(string key)
     {
         List<MyDialogueBase> dialogueList = new List<MyDialogueBase>();
         //TODO 暂时使用直接读取excel的方式
         string path = PATH_DIALOGUE + key + ".xlsx";
         var fields = GetFieldInfos("MyDialogueBase");
-        foreach (var field in fields)
-        {
-            Debug.Log(field.Name);
-        }
+        //foreach (var field in fields)
+        //{
+        //    Debug.Log(field.Name);
+        //}
         DataSet dataset = ExcelRead.ReadExcel(path);
         Dictionary<string, int> dicTitle = new Dictionary<string, int>();
         for (int i = 0; i < dataset.Tables[0].Rows.Count; i++)
@@ -78,14 +80,14 @@ public class MyLoadDataManager : MySingle<MyLoadDataManager>
 
     public List<MyQuestBase> LoadQuestList(string key)
     {
-        if(_dicQuests.ContainsKey(key)) return _dicQuests[key];
+        if (_dicQuests.ContainsKey(key)) return _dicQuests[key];
         List<MyQuestBase> listQuests = new List<MyQuestBase>();
         string path = PATH_QUESTS + key + ".xlsx";
         var fields = GetFieldInfos("MyQuestBase");
-        foreach (var field in fields)
-        {
-            Debug.Log(field.Name);
-        }
+        //foreach (var field in fields)
+        //{
+        //    Debug.Log(field.Name);
+        //}
         DataSet dataset = ExcelRead.ReadExcel(path);
         Dictionary<string, int> dicTitle = new Dictionary<string, int>();
         for (int i = 0; i < dataset.Tables[0].Rows.Count; i++)
@@ -120,6 +122,76 @@ public class MyLoadDataManager : MySingle<MyLoadDataManager>
         }
         _dicQuests.Add(key, listQuests);
         return _dicQuests[key];
+    }
+    /// <summary>
+    /// 数据并非一次加载完成，而是需要哪个加载哪个
+    /// </summary>
+    /// <param name="npcId"></param>
+    /// <returns></returns>
+    public Npc_DialogueConfig LoadNpcDialogueConfig(string npcId)
+    {
+        if (!_dicNpcDialogueConfig.ContainsKey(npcId))
+        {
+            Npc_DialogueConfig npc_DialogueConfig = new Npc_DialogueConfig();
+            string path = PATH_NPC_DIALOGUE_CONFIG;
+            //var fields = GetFieldInfos("MyQuestBase");
+            DataSet dataset = ExcelRead.ReadExcel(path);
+            Dictionary<string, int> dicTitle = new Dictionary<string, int>();
+            for (int i = 0; i < dataset.Tables[0].Rows.Count; i++)
+            {
+                if (i == 0)
+                {
+                    for (int j = 0; j < dataset.Tables[0].Columns.Count; j++)
+                    {
+                        //记载excel表头及对应的列的序号
+                        int t = j;
+                        dicTitle.Add(dataset.Tables[0].Rows[i][j].ToString(), t);
+                        //Debug.Log(dataset.Tables[0].Rows[i][j].ToString());
+                    }
+                }
+                if (i < 2)
+                {
+                    continue;
+                }
+                var table = dataset.Tables[0].Rows[i];
+                if (table[dicTitle["NPCID"]].ToString() != npcId)
+                {
+                    continue;//如果该行的NPCID并非要加载的目标的id，那就跳过
+                }
+                //解析通用配置
+                Npc_DialogueConfig @base = new Npc_DialogueConfig()
+                {
+                    _NpcId = table[dicTitle["NPCID"]].ToString(),
+                    _DefaultDialogueGroupId = table[dicTitle["Default"]].ToString()
+                };
+                ////解析任务类型
+                //@base._objectiveType = (EObjectiveType)Enum.Parse(typeof(EObjectiveType), table[dicTitle["Objective"]].ToString());
+                //listQuests.Add(@base);
+                List<Npc_DialogueConfigSingle> list = new List<Npc_DialogueConfigSingle>();
+                int prefix = 3;//此处的3对应excel中非对话配置的部分，即有序号上的顺序的部分,若表格发生变动此处也需要变化
+                int cols = dataset.Tables[0].Columns.Count - prefix;//计算属于配置部分的列数
+                cols /= 3;//所需要获取的列数
+                //加载所有的配置
+                for (int j = 0; j < cols; j++)
+                {
+                    string dialogue = table[dicTitle[string.Format("Dialogue_{0}", j + 1)]].ToString();
+                    if (string.IsNullOrEmpty(dialogue)) break;//未获取到有效信息，则跳出获取，说明已经结束
+                    Npc_DialogueConfigSingle config = new Npc_DialogueConfigSingle()
+                    {
+                        _idDialogue = dialogue,
+                        _idQuests = table[dicTitle[string.Format("Mission_{0}", j + 1)]].ToString(),
+                        _status = table[dicTitle[string.Format("State_{0}", j + 1)]].ToString(),
+                    };
+                    list.Add(config);
+                }
+                //配置赋值
+                @base._npc_DialogueConfigs = list;
+                _dicNpcDialogueConfig.Add(npcId, @base);
+                break;
+            }
+
+        }
+        return _dicNpcDialogueConfig.ContainsKey(npcId) ? _dicNpcDialogueConfig[npcId] : null;
     }
     public FieldInfo[] GetFieldInfos(string key)
     {

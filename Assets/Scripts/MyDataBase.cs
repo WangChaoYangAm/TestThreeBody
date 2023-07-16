@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+#region 对话类
 [System.Serializable]
 public class MyDialogueBase
 {
@@ -42,6 +43,23 @@ public class ConfigDialogue_Single
         get { return _function != EDialogueFunc.None; }
     }
 }
+#endregion
+
+#region NPC类
+public struct Npc_DialogueConfigSingle
+{
+    public string _idDialogue;
+    public string _idQuests;
+    public string _status;
+}
+public class Npc_DialogueConfig
+{
+    public string _NpcId;
+    public string _DefaultDialogueGroupId;
+    public List<Npc_DialogueConfigSingle> _npc_DialogueConfigs;
+}
+#endregion
+
 public enum EModule
 {
     UIManager,
@@ -54,6 +72,10 @@ public enum EWindowUI
     UIQuests
 }
 
+public class Tags
+{
+    public const string PLAYER = "Player";
+}
 
 
 

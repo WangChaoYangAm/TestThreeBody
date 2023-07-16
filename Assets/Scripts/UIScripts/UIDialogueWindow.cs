@@ -26,6 +26,10 @@ public class UIDialogueWindow : MyBaseWindow
     public void UpdateDialogue(MyDialogueBase dialogueBase)
     {
         if (dialogueBase == null) return;
+        if (!this.gameObject.activeSelf)//确保UI界面是打开的
+        {
+            ShowWindow(false);
+        }
         _dialogueBase = dialogueBase;
         //获取已有的子对象并回收
         var childs = MyFind.FindAllChild(_rootDialogue);
@@ -34,7 +38,7 @@ public class UIDialogueWindow : MyBaseWindow
             ObjectPool.Instance.RecycleObj(childs[i].gameObject);
             childs[i].gameObject.SetActive(false);
         }
-        _textField.text = _dialogueBase._dialogueText;
+        _textField.text = string.Format("{0}:{1}", _dialogueBase._npcName, _dialogueBase._dialogueText);
         //重新生成对话选项 更新文本 注册方法
         var optionList = _dialogueBase._dialogueOptionList;
         for (int i = 0; i < optionList.Count; i++)
