@@ -22,6 +22,13 @@ public class MyDevelopeModeManager : MySingle<MyDevelopeModeManager>
                 MyGameManager.Instance.UpdateQuestsState(TestObjectiveType, TestObjectiveName, TestAmount);
             }
         });
+        MyGameManager.Instance.Regist(KeyCode.N, () =>
+        {
+            if (IsDevelopMode)
+            {
+                MyQuestManager.Instance.ForceNextQuests();
+            }
+        });
     }
 
     // Update is called once per frame

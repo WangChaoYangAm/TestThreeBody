@@ -28,7 +28,7 @@ public class UIDialogueWindow : MyBaseWindow
         if (dialogueBase == null) return;
         if (!this.gameObject.activeSelf)//确保UI界面是打开的
         {
-            ShowWindow(false);
+            ShowWindow(true);
         }
         _dialogueBase = dialogueBase;
         //获取已有的子对象并回收

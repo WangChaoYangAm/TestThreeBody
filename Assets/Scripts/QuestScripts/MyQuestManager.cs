@@ -11,6 +11,7 @@ public class MyQuestManager : MySingle<MyQuestManager>
     private MyQuestBase _curQuest;
     private List<MyQuestBase> _mQuestList;
     private Dictionary<string, List<MyQuestBase>> _dicPathQuests = new Dictionary<string, List<MyQuestBase>>();//不同路径的文件excel对应的任务list
+    private Dictionary<string, MyQuestBase> _dicIdToQuests = new Dictionary<string, MyQuestBase>();
     //Action中的string对应任务目标名称，int为对应的数量
     public Dictionary<EObjectiveType, Action<string, int>> _dicObservers = new Dictionary<EObjectiveType, Action<string, int>>();
 
@@ -22,6 +23,13 @@ public class MyQuestManager : MySingle<MyQuestManager>
     {
         //TODO
         _mQuestList = MyLoadDataManager.Instance.LoadQuestList(fileName);
+        for (int i = 0; i < _mQuestList.Count; i++)
+        {
+            if (!_dicIdToQuests.ContainsKey(_mQuestList[i]._questId))
+            {
+                _dicIdToQuests.Add(_mQuestList[i]._questId, _mQuestList[i]);
+            }
+        }
     }
 
     /// <summary>
@@ -36,11 +44,21 @@ public class MyQuestManager : MySingle<MyQuestManager>
         if (quest == null) Debug.LogError("未加载到任务id为" + questID);
         return quest;
     }
+    public void ForceNextQuests()
+    {
+        if (_curQuest != null)
+            _curQuest.OnChangeQuestStatus(EQuestStatus.Complete);
+    }
+    public MyQuestBase GetTargetQuests(string questID)
+    {
+        return _dicIdToQuests.ContainsKey(questID) ? _dicIdToQuests[questID] : null;
+    }
     public void NextQuests()
     {
         //TODO 其实这里没有区分是哪个listGroup,错误的，因为id没改，所以后面还需要改，最好根据任务id来
         string nextId = _curQuest._nextQuestId;
-        MyQuestBase quest = _mQuestList.Find(t => t._questId == nextId);
+        //MyQuestBase quest = _mQuestList.Find(t => t._questId == nextId);
+        MyQuestBase quest = _dicIdToQuests[nextId];
         SetCurQuests(quest);
     }
     #region 设置当前任务状态
@@ -60,7 +78,7 @@ public class MyQuestManager : MySingle<MyQuestManager>
             return;
         }
         _curQuest = quest;
-        if (_curQuest._questStatus != EQuestStatus.Receiving) { _curQuest.Accept(); }
+        if (_curQuest._questStatus == EQuestStatus.NotAccept) { _curQuest.Accept(); }
         ((UIQuestsWindow)UIManager.Instance.LoadWindow(EWindowUI.UIQuests)).UpdateTextPanel(_curQuest);
 
     }

@@ -51,15 +51,16 @@ public class MyQuestBase
     }
     public virtual void Accept()
     {
-        OnChangeQuestStatus(EQuestStatus.NotAccept);
+        OnChangeQuestStatus(EQuestStatus.Receiving);
     }
     public virtual void OnChangeQuestStatus(EQuestStatus status)
     {
         switch (status)
         {
             case EQuestStatus.NotAccept:
+                break;
+            case EQuestStatus.Receiving:
                 InitQuest();
-                _questStatus = EQuestStatus.Receiving;
                 MyQuestManager.Instance.AddAction(true, _objectiveType, OnEndOperate);
                 break;
             case EQuestStatus.Complete:
@@ -74,9 +75,10 @@ public class MyQuestBase
             case EQuestStatus.Submit:
                 if (_questStatus != EQuestStatus.Complete && _questStatus != EQuestStatus.Failed)
                     Debug.LogError("要提交的任务，状态存在问题，请检查");
-                _questStatus = EQuestStatus.Submit;
                 break;
         }
+        _questStatus = status;
+
     }
     /// <summary>
     /// 任务更新操作 用于接收触发类型及更新数量
@@ -93,7 +95,7 @@ public class MyQuestBase
         {
             _curAmount += amount;
             //TODO 由于未配置需求数量，故暂时都采用1作为目标值
-            if(_curAmount > 1)
+            if (_curAmount > 1)
             {
                 OnChangeQuestStatus(EQuestStatus.Complete);
             }

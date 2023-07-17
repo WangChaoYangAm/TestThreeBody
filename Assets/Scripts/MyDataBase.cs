@@ -55,7 +55,7 @@ public struct Npc_DialogueConfigSingle
 public class Npc_DialogueConfig
 {
     public string _NpcId;
-    public string _DefaultDialogueGroupId;
+    public string _DefaultDialogueId;
     public List<Npc_DialogueConfigSingle> _npc_DialogueConfigs;
 }
 #endregion

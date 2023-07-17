@@ -162,7 +162,7 @@ public class MyLoadDataManager : MySingle<MyLoadDataManager>
                 Npc_DialogueConfig @base = new Npc_DialogueConfig()
                 {
                     _NpcId = table[dicTitle["NPCID"]].ToString(),
-                    _DefaultDialogueGroupId = table[dicTitle["Default"]].ToString()
+                    _DefaultDialogueId = table[dicTitle["Default"]].ToString()
                 };
                 ////解析任务类型
                 //@base._objectiveType = (EObjectiveType)Enum.Parse(typeof(EObjectiveType), table[dicTitle["Objective"]].ToString());

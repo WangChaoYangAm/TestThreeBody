@@ -36,7 +36,7 @@ public class NpcTrigger : MonoBehaviour
         if(_otherCollider != null)
         {
             //MyGameManager.Instance.UpdateQuestsState(EObjectiveType.Dialogue, _npcID, 1);
-            var dialogueConfig = NpcManager.Instance.LoadNpcDialogueId(_npcID);
+            string dialogueConfig = NpcManager.Instance.LoadNpcDialogueId(_npcID);
             if(!string.IsNullOrEmpty(dialogueConfig) )
             {
                 DialogueManager.Instance.InitDialogueGroup(dialogueConfig);

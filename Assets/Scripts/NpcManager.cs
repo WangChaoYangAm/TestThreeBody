@@ -10,12 +10,12 @@ public class NpcManager : MySingle<NpcManager>
         for (int i = 0; i < config._npc_DialogueConfigs.Count; i++)
         {
             //TODO
-            var quest = MyQuestManager.Instance.GetQuests(config._npc_DialogueConfigs[i]._idQuests);
-            if(quest._questStatus.ToString() == config._npc_DialogueConfigs[i]._status)
+            var quest = MyQuestManager.Instance.GetTargetQuests(config._npc_DialogueConfigs[i]._idQuests);
+            if (quest._questStatus.ToString() == config._npc_DialogueConfigs[i]._status)
             {
                 return config._npc_DialogueConfigs[i]._idDialogue;
             }
         }
-        return string.Empty;
+        return config._DefaultDialogueId;
     }
 }

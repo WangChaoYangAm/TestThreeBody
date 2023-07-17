@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using DG.Tweening;
+using System;
+
 public enum EDialogueFunc
 {
     None,
@@ -23,6 +25,8 @@ public class DialogueManager : MySingle<DialogueManager>
     private int _curGroupIndex, _curDiaIndex;//指定序号
     private bool _allowNextDialogue;
     private UIDialogueWindow _dialogueWindow;
+
+    private Queue<Action> _queueEvents;
 
     /// <summary>
     /// 传入对话组文件名，播放对应的对话
@@ -89,8 +93,5 @@ public class DialogueManager : MySingle<DialogueManager>
 
         }
     }
-    private void ReInit()
-    {
-        _curGroupIndex = 0;
-    }
+
 }

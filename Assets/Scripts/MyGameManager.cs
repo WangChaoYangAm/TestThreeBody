@@ -17,9 +17,15 @@ public class MyGameManager : MySingle<MyGameManager>
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.anyKeyDown)
         {
-            _dicKeyEvent[KeyCode.F]();
+            foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
+            {
+                if (Input.GetKeyDown(keyCode) && _dicKeyEvent.ContainsKey(keyCode))
+                {
+                    _dicKeyEvent[keyCode]();
+                }
+            }
         }
     }
     void InitWindows()
