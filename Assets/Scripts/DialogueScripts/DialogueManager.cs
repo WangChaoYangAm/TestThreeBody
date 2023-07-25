@@ -27,6 +27,12 @@ public class DialogueManager : MySingle<DialogueManager>
     private UIDialogueWindow _dialogueWindow;
 
     private Queue<Action> _queueEvents;
+    private Action<float,Action> _curDialogueAction;//延迟时间和执行事件
+
+    private void Update()
+    {
+        
+    }
 
     /// <summary>
     /// 传入对话组文件名，播放对应的对话
@@ -75,6 +81,7 @@ public class DialogueManager : MySingle<DialogueManager>
     }
     private void SwitchDialogue(int groupIndex, int index)
     {
+        DOTween.KillAll();//杀掉已加载的对话sequence
         _curGroupIndex = groupIndex;
         _curDiaIndex = index;
         _dialogueList = _dialogueGroupList.FindAll(t => _curGroupIndex.ToString() == t._groupId);
