@@ -11,6 +11,7 @@ public class NpcManager : MySingle<NpcManager>
         {
             //TODO
             var quest = MyQuestManager.Instance.GetTargetQuests(config._npc_DialogueConfigs[i]._idQuests);
+            if (quest == null) continue;
             if (quest._questStatus.ToString() == config._npc_DialogueConfigs[i]._status)
             {
                 return config._npc_DialogueConfigs[i]._idDialogue;

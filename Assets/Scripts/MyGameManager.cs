@@ -5,6 +5,8 @@ using System;
 
 public class MyGameManager : MySingle<MyGameManager>
 {
+    [SerializeField]
+    private string _questStartId;
     /// <summary>
     /// 将按钮事件注册进来，方便统一管理，而不是每个脚本都有自己的，不好增删改
     /// </summary>
@@ -32,7 +34,7 @@ public class MyGameManager : MySingle<MyGameManager>
     {
         //预加载任务界面并填充数据
         var UIQuests = UIManager.Instance.LoadWindow(EWindowUI.UIQuests) as UIQuestsWindow;
-        MyQuestManager.Instance.LoadData("1000");
+        MyQuestManager.Instance.LoadData(_questStartId);
         MyQuestBase myQuest = MyQuestManager.Instance.GetQuests();
         MyQuestManager.Instance.SetCurQuests(myQuest);
         //预加载对话界面,暂定无对话，初次加载直接隐藏对话UI

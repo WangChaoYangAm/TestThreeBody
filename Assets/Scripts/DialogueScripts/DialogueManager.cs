@@ -58,30 +58,55 @@ public class DialogueManager : MySingle<DialogueManager>
     private void AutoNextDialogue()
     {
         if (!_allowNextDialogue) return;
-        Sequence sequence = DOTween.Sequence();
-        sequence.AppendCallback(() =>
-        {
-            _curDiaIndex++;
-            if (_dialogueList.Count > _curDiaIndex)//切换当前groupId的下一句
+        float delayTime = _curDialogue == null ? 0 : _curDialogue._delayTime;
+        MyDelayEventManager.Instance.Register(true, MyDelayActionName.DIALOPGUE, new DelayAction
+            (
+            delayTime,
+            () =>
             {
-                _curDialogue = _dialogueList[_curDiaIndex];
-                _dialogueWindow.UpdateDialogue(_curDialogue);
+                _curDiaIndex++;
+                if (_dialogueList.Count > _curDiaIndex)//切换当前groupId的下一句
+                {
+                    _curDialogue = _dialogueList[_curDiaIndex];
+                    _dialogueWindow.UpdateDialogue(_curDialogue);
+                }
+                else
+                {
+                    //对话结束
+                    _dialogueWindow.ShowWindow(false);
+                    Debug.Log("对话结束");
+                    _allowNextDialogue = false;
+                    _dialogueWindow.ClearTextField();
+                    _curDialogue = null;
+                }
             }
-            else
-            {
-                //对话结束
-                _dialogueWindow.ShowWindow(false);
-                Debug.Log("对话结束");
-                _allowNextDialogue = false;
-                _dialogueWindow.ClearTextField();
-                _curDialogue = null;
-            }
+            )
 
-        }).SetDelay(_curDialogue == null ? 0 : _curDialogue._delayTime);
+        );
+        //Sequence sequence = DOTween.Sequence();
+        //sequence.AppendCallback(() =>
+        //{
+        //    _curDiaIndex++;
+        //    if (_dialogueList.Count > _curDiaIndex)//切换当前groupId的下一句
+        //    {
+        //        _curDialogue = _dialogueList[_curDiaIndex];
+        //        _dialogueWindow.UpdateDialogue(_curDialogue);
+        //    }
+        //    else
+        //    {
+        //        //对话结束
+        //        _dialogueWindow.ShowWindow(false);
+        //        Debug.Log("对话结束");
+        //        _allowNextDialogue = false;
+        //        _dialogueWindow.ClearTextField();
+        //        _curDialogue = null;
+        //    }
+
+        //}).SetDelay(_curDialogue == null ? 0 : _curDialogue._delayTime);
     }
     private void SwitchDialogue(int groupIndex, int index)
     {
-        DOTween.KillAll();//杀掉已加载的对话sequence
+        //DOTween.KillAll();//杀掉已加载的对话sequence
         _curGroupIndex = groupIndex;
         _curDiaIndex = index;
         _dialogueList = _dialogueGroupList.FindAll(t => _curGroupIndex.ToString() == t._groupId);

@@ -4,8 +4,7 @@ using System.Data;
 using UnityEngine;
 using System;
 using System.Reflection;
-using DG.Tweening;
-using Unity.VisualScripting;
+using System.IO;
 
 public class MyLoadDataManager : MySingle<MyLoadDataManager>
 {
@@ -83,6 +82,12 @@ public class MyLoadDataManager : MySingle<MyLoadDataManager>
         if (_dicQuests.ContainsKey(key)) return _dicQuests[key];
         List<MyQuestBase> listQuests = new List<MyQuestBase>();
         string path = PATH_QUESTS + key + ".xlsx";
+        if (!System.IO.File.Exists(path))
+        {
+            Debug.LogError("解析不到目标文件," + path);
+            return null;
+        }
+
         var fields = GetFieldInfos("MyQuestBase");
         //foreach (var field in fields)
         //{
@@ -98,7 +103,14 @@ public class MyLoadDataManager : MySingle<MyLoadDataManager>
                 {
                     //记载excel表头及对应的列的序号
                     int t = j;
-                    dicTitle.Add(dataset.Tables[0].Rows[i][j].ToString(), t);
+                    string tmpKey = dataset.Tables[0].Rows[i][j].ToString();
+                    if (!string.IsNullOrEmpty(tmpKey))
+                    {
+                        if (!dicTitle.ContainsKey(tmpKey))
+                            dicTitle.Add(tmpKey, t);
+                        else
+                            Debug.LogError(key + "excel中存在重复键：" + key);
+                    }
                 }
             }
             if (i < 2)
@@ -124,6 +136,7 @@ public class MyLoadDataManager : MySingle<MyLoadDataManager>
         return _dicQuests[key];
     }
     /// <summary>
+    /// 加载Npc的对话配置表
     /// 数据并非一次加载完成，而是需要哪个加载哪个
     /// </summary>
     /// <param name="npcId"></param>
