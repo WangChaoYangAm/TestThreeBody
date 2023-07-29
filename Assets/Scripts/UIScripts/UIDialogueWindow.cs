@@ -47,7 +47,9 @@ public class UIDialogueWindow : MyBaseWindow
             go.SetActive(true);
             go.transform.SetParent(_rootDialogue);
             var option = optionList[i];
-            go.GetComponent<ButtonCell>().Init(option._btnDes, () => { OnClickAction?.Invoke(option._function, option._para); });
+            go.GetComponent<ButtonCell>().Init(option._btnDes, () => { 
+                OnClickAction?.Invoke(option._function, option._para); }
+            );
         }
         OnEndAction?.Invoke();
     }

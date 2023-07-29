@@ -24,14 +24,15 @@ public class DialogueManager : MySingle<DialogueManager>
     private MyDialogueBase _curDialogue;
     private int _curGroupIndex, _curDiaIndex;//指定序号
     private bool _allowNextDialogue;
+    private string _objectiveName;
     private UIDialogueWindow _dialogueWindow;
 
     private Queue<Action> _queueEvents;
-    private Action<float,Action> _curDialogueAction;//延迟时间和执行事件
+    private Action<float, Action> _curDialogueAction;//延迟时间和执行事件
 
     private void Update()
     {
-        
+
     }
 
     /// <summary>
@@ -40,6 +41,7 @@ public class DialogueManager : MySingle<DialogueManager>
     /// <param name="key"></param>
     public void InitDialogueGroup(string key)
     {
+        _objectiveName = key;
         _dialogueGroupList = MyLoadDataManager.Instance.LoadDialogueList(key);
         if (!_dialogueWindow)
         {
@@ -83,26 +85,6 @@ public class DialogueManager : MySingle<DialogueManager>
             )
 
         );
-        //Sequence sequence = DOTween.Sequence();
-        //sequence.AppendCallback(() =>
-        //{
-        //    _curDiaIndex++;
-        //    if (_dialogueList.Count > _curDiaIndex)//切换当前groupId的下一句
-        //    {
-        //        _curDialogue = _dialogueList[_curDiaIndex];
-        //        _dialogueWindow.UpdateDialogue(_curDialogue);
-        //    }
-        //    else
-        //    {
-        //        //对话结束
-        //        _dialogueWindow.ShowWindow(false);
-        //        Debug.Log("对话结束");
-        //        _allowNextDialogue = false;
-        //        _dialogueWindow.ClearTextField();
-        //        _curDialogue = null;
-        //    }
-
-        //}).SetDelay(_curDialogue == null ? 0 : _curDialogue._delayTime);
     }
     private void SwitchDialogue(int groupIndex, int index)
     {
@@ -122,7 +104,9 @@ public class DialogueManager : MySingle<DialogueManager>
                 _dialogueList = _dialogueGroupList.FindAll(t => t._groupId == para);
                 SwitchDialogue(int.Parse(para), 0);
                 break;
-
+            case EDialogueFunc.Complete:
+                MyQuestManager.Instance.UpdateQuestsObserver(EObjectiveType.Dialogue, _objectiveName, 1);
+                break;
         }
     }
 

@@ -1,28 +1,31 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class MyDelayEventManager : MySingle<MyDelayEventManager>
 {
     private List<Action> _actionList = new List<Action>();
-    public Dictionary<string, DelayAction> _dicAction = new Dictionary<string, DelayAction>();
+    private Dictionary<string, DelayAction> _dicAction = new Dictionary<string, DelayAction>();
 
     private void Update()
     {
-        foreach (var item in _dicAction)
+        List<string> list = _dicAction.Keys.ToList();
+        //移除已经完成或为null的键值对
+        for (int i = 0; i < list.Count; i++)
         {
-            //移除已经完成的时间
-            if (item.Value == null || item.Value.GetIsEnd)
+            DelayAction act = _dicAction[list[i]];
+
+            //触发是否结束
+            if (act != null)
             {
-                _dicAction.Remove(item.Key);
+                act.CheckEnd();
             }
-            else
-            {
-                //触发是否结束
-                item.Value.CheckEnd();
-            }
+            act = _dicAction[list[i]];
+            if (act == null || act.GetIsEnd)
+                _dicAction.Remove(list[i]);
         }
     }
     public void Register(bool isRegister, string key, DelayAction delayAction)
@@ -50,6 +53,7 @@ public class MyDelayEventManager : MySingle<MyDelayEventManager>
             }
         }
     }
+
 }
 public class MyDelayActionName
 {
@@ -70,15 +74,15 @@ public class DelayAction
         _delayTime = delayTime;
         OnDelayAction = delayAction;
         _timer = Time.time;
-        CheckEnd(_delayTime == 0);
     }
-    public void CheckEnd(bool isNow = false)
-    {
 
-        if (Time.time - _timer > _delayTime || isNow)
+    public void CheckEnd()
+    {
+        if (_isEnd) return;
+        if (Time.time - _timer > _delayTime)
         {
-            OnDelayAction?.Invoke();
             _isEnd = true;
+            OnDelayAction?.Invoke();
         }
     }
 
