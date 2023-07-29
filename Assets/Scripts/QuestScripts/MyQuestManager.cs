@@ -10,9 +10,9 @@ public class MyQuestManager : MySingle<MyQuestManager>
 {
     private MyQuestBase _curQuest;
     private List<MyQuestBase> _mQuestList;
-    private Dictionary<string, List<MyQuestBase>> _dicPathQuests = new Dictionary<string, List<MyQuestBase>>();//不同路径的文件excel对应的任务list
+    //private Dictionary<string, List<MyQuestBase>> _dicPathQuests = new Dictionary<string, List<MyQuestBase>>();//不同路径的文件excel对应的任务list
     private Dictionary<string, MyQuestBase> _dicIdToQuests = new Dictionary<string, MyQuestBase>();
-    //Action中的string对应任务目标名称，int为对应的数量
+    //Action中的string对应任务目标名称objectiveName，int为对应的数量
     public Dictionary<EObjectiveType, Action<string, int>> _dicObservers = new Dictionary<EObjectiveType, Action<string, int>>();
 
     /// <summary>
@@ -47,7 +47,7 @@ public class MyQuestManager : MySingle<MyQuestManager>
     public void ForceNextQuests()
     {
         if (_curQuest != null)
-            _curQuest.OnChangeQuestStatus(EQuestStatus.Complete);
+            _curQuest.ForceChangeStatus(EQuestStatus.Complete);
     }
     public MyQuestBase GetTargetQuests(string questID)
     {
@@ -58,8 +58,22 @@ public class MyQuestManager : MySingle<MyQuestManager>
         //TODO 其实这里没有区分是哪个listGroup,错误的，因为id没改，所以后面还需要改，最好根据任务id来
         string nextId = _curQuest._nextQuestId;
         //MyQuestBase quest = _mQuestList.Find(t => t._questId == nextId);
-        MyQuestBase quest = _dicIdToQuests[nextId];
-        SetCurQuests(quest);
+        if (!string.IsNullOrEmpty(nextId))
+        {
+            if (!_dicIdToQuests.ContainsKey(nextId))
+            {
+                Debug.LogError(nextId + "任务id并不存在");
+                return;
+            }
+            MyQuestBase quest = _dicIdToQuests[nextId];
+            SetCurQuests(quest);
+
+        }
+        else
+        {
+            ((UIQuestsWindow)UIManager.Instance.LoadWindow(EWindowUI.UIQuests)).NormalText();
+            Debug.Log("<color=yellow>系列任务完成，无后续任务</color>");
+        }
     }
     #region 设置当前任务状态
     public void SetCurQuests(string questId)
@@ -108,6 +122,19 @@ public class MyQuestManager : MySingle<MyQuestManager>
         if (_dicObservers.ContainsKey(objectiveType) && _dicObservers[objectiveType] != null)
         {
             _dicObservers[objectiveType](objectiveNmae, objectiveAmount);
+        }
+    }
+    public void UpdateQuestStatus(EQuestStatus questStatus, string questId)
+    {
+        switch (questStatus)
+        {
+            case EQuestStatus.Receiving:
+            case EQuestStatus.Submit:
+            case EQuestStatus.Abort:
+                if (_dicIdToQuests.ContainsKey(questId))
+                    _dicIdToQuests[questId].ForceChangeStatus(questStatus);
+                break;
+            default: Debug.Log("目标状态并非为允许的改变范围：" + questStatus); break;
         }
     }
     #endregion

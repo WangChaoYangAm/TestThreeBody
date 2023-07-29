@@ -6,11 +6,12 @@ public class MySingle<T> : MonoBehaviour where T : MySingle<T>
 {
     private static volatile T _instance;
     private static object _instanceLock = new object();
+
     public static T Instance
     {
         get
         {
-            if(_instance == null)
+            if (_instance == null)
             {
                 lock (_instanceLock)
                 {
@@ -18,6 +19,8 @@ public class MySingle<T> : MonoBehaviour where T : MySingle<T>
                     {
                         var _instanceObj = new GameObject(typeof(T).ToString());
                         _instance = _instanceObj.AddComponent<T>();
+                        _instance.name = "MySingle_" + typeof(T).ToString();
+                        _instance.transform.SetParent(GameObject.FindGameObjectWithTag(Tags.MYSINGLE_ROOT).transform);
                     }
                 }
             }

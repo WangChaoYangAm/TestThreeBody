@@ -41,7 +41,6 @@ public class DialogueManager : MySingle<DialogueManager>
     /// <param name="key"></param>
     public void InitDialogueGroup(string key)
     {
-        _objectiveName = key;
         _dialogueGroupList = MyLoadDataManager.Instance.LoadDialogueList(key);
         if (!_dialogueWindow)
         {
@@ -66,6 +65,7 @@ public class DialogueManager : MySingle<DialogueManager>
             delayTime,
             () =>
             {
+                DialogueTrigger();
                 _curDiaIndex++;
                 if (_dialogueList.Count > _curDiaIndex)//切换当前groupId的下一句
                 {
@@ -74,6 +74,7 @@ public class DialogueManager : MySingle<DialogueManager>
                 }
                 else
                 {
+                    //DialogueTrigger();
                     //对话结束
                     _dialogueWindow.ShowWindow(false);
                     Debug.Log("对话结束");
@@ -104,10 +105,18 @@ public class DialogueManager : MySingle<DialogueManager>
                 _dialogueList = _dialogueGroupList.FindAll(t => t._groupId == para);
                 SwitchDialogue(int.Parse(para), 0);
                 break;
-            case EDialogueFunc.Complete:
-                MyQuestManager.Instance.UpdateQuestsObserver(EObjectiveType.Dialogue, _objectiveName, 1);
-                break;
         }
     }
-
+    private void DialogueTrigger()
+    {
+        if (!string.IsNullOrEmpty(_curDialogue._missionId) && !string.IsNullOrEmpty(_curDialogue._missionState))
+        {
+            switch (_curDialogue._missionState)
+            {
+                case "Dialogue":
+                    MyQuestManager.Instance.UpdateQuestsObserver(EObjectiveType.Dialogue, _curDialogue._missionId, 1);
+                    break;
+            }
+        }
+    }
 }

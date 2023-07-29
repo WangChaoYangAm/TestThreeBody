@@ -12,6 +12,7 @@ public enum EQuestStatus
     Complete,//已完成但未提交
     Failed,//失败
     Submit,//已提交
+    Abort//放弃
 }
 public enum EObjectiveType
 {
@@ -53,7 +54,7 @@ public class MyQuestBase
     {
         OnChangeQuestStatus(EQuestStatus.Receiving);
     }
-    public virtual void OnChangeQuestStatus(EQuestStatus status)
+    protected virtual void OnChangeQuestStatus(EQuestStatus status)
     {
         switch (status)
         {
@@ -64,7 +65,7 @@ public class MyQuestBase
                 MyQuestManager.Instance.AddAction(true, _objectiveType, OnEndOperate);
                 break;
             case EQuestStatus.Complete:
-                MyQuestManager.Instance.AddAction(false, _objectiveType, OnEndOperate);
+                //MyQuestManager.Instance.AddAction(false, _objectiveType, OnEndOperate);
                 //其实应该切换状态的，但配置文件中的相关配置有问题，所以暂时采用不更新状态
                 MyQuestManager.Instance.NextQuests();
                 break;
@@ -76,9 +77,15 @@ public class MyQuestBase
                 if (_questStatus != EQuestStatus.Complete && _questStatus != EQuestStatus.Failed)
                     Debug.LogError("要提交的任务，状态存在问题，请检查");
                 break;
+            case EQuestStatus.Abort:
+                break;
         }
         _questStatus = status;
 
+    }
+    public virtual void ForceChangeStatus(EQuestStatus status)
+    {
+        OnChangeQuestStatus(status);
     }
     /// <summary>
     /// 任务更新操作 用于接收触发类型及更新数量
@@ -95,7 +102,7 @@ public class MyQuestBase
         {
             _curAmount += amount;
             //TODO 由于未配置需求数量，故暂时都采用1作为目标值
-            if (_curAmount > 1)
+            if (_curAmount > 0)
             {
                 OnChangeQuestStatus(EQuestStatus.Complete);
             }

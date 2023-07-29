@@ -12,6 +12,9 @@ public class UIQuestsWindow : MyBaseWindow
     {
         _textDes.text = string.Format("任务名:{0}\n任务描述：{1}\n,任务进度：{2}/1", myQuest._questName, myQuest._questDes, myQuest.GetCurAmount);
     }
-
+    public void NormalText()
+    {
+        _textDes.text = "暂无选中任务";
+    }
 
 }
