@@ -74,7 +74,7 @@ public class DialogueManager : MySingle<DialogueManager>
                 }
                 else
                 {
-                    //DialogueTrigger();
+                    DialogueTrigger();
                     //对话结束
                     _dialogueWindow.ShowWindow(false);
                     Debug.Log("对话结束");
@@ -105,17 +105,29 @@ public class DialogueManager : MySingle<DialogueManager>
                 _dialogueList = _dialogueGroupList.FindAll(t => t._groupId == para);
                 SwitchDialogue(int.Parse(para), 0);
                 break;
+
         }
     }
     private void DialogueTrigger()
     {
         if (!string.IsNullOrEmpty(_curDialogue._missionId) && !string.IsNullOrEmpty(_curDialogue._missionState))
         {
-            switch (_curDialogue._missionState)
+            EDialogueFunc questStatus = EDialogueFunc.None;
+            if (System.Enum.TryParse<EDialogueFunc>(_curDialogue._missionState, out questStatus))
             {
-                case "Dialogue":
-                    MyQuestManager.Instance.UpdateQuestsObserver(EObjectiveType.Dialogue, _curDialogue._missionId, 1);
-                    break;
+                switch (questStatus)
+                {
+                    //case "Dialogue":
+                    //    MyQuestManager.Instance.UpdateQuestsObserver(EObjectiveType.Dialogue, _curDialogue._missionId, 1);
+                    //    break;
+                    case EDialogueFunc.Complete:
+                        MyQuestManager.Instance.UpdateQuestStatus(EQuestStatus.Complete, _curDialogue._missionId);
+                        break;
+                }
+            }
+            else
+            {
+                Debug.LogError("传入的任务指定状态错误，无法转义为EDialogueFunc，请检查：" + _curDialogue._missionState);
             }
         }
     }

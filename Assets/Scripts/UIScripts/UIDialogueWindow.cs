@@ -16,11 +16,20 @@ public class UIDialogueWindow : MyBaseWindow
     private MyDialogueBase _dialogueBase;
     public Action<EDialogueFunc, string> OnClickAction;
     public Action OnEndAction;
+    private Dictionary<KeyCode, Action> _dicKeycodeAction = new Dictionary<KeyCode, Action>();
     public void Init(Action EndAction, Action<EDialogueFunc, string> ClickAction)
     {
         ObjectPool.Instance.SetPrefab(_preCellDialogue);
         OnEndAction = EndAction;
         OnClickAction = ClickAction;
+        _dicKeycodeAction.Add(KeyCode.Alpha1, null);
+        _dicKeycodeAction.Add(KeyCode.Alpha2, null);
+        _dicKeycodeAction.Add(KeyCode.Alpha3, null);
+        _dicKeycodeAction.Add(KeyCode.Alpha4, null);
+        MyGameManager.Instance.Regist(KeyCode.Alpha1, () => KeycodeAction(KeyCode.Alpha1));
+        MyGameManager.Instance.Regist(KeyCode.Alpha2, () => KeycodeAction(KeyCode.Alpha2));
+        MyGameManager.Instance.Regist(KeyCode.Alpha3, () => KeycodeAction(KeyCode.Alpha3));
+        MyGameManager.Instance.Regist(KeyCode.Alpha4, () => KeycodeAction(KeyCode.Alpha4));
     }
 
     public void UpdateDialogue(MyDialogueBase dialogueBase)
@@ -47,9 +56,32 @@ public class UIDialogueWindow : MyBaseWindow
             go.SetActive(true);
             go.transform.SetParent(_rootDialogue);
             var option = optionList[i];
-            go.GetComponent<ButtonCell>().Init(option._btnDes, () => { 
-                OnClickAction?.Invoke(option._function, option._para); }
-            );
+            go.GetComponent<ButtonCell>().Init(option._btnDes);
+            KeyCode keyCode = KeyCode.None;
+            if (Enum.TryParse<KeyCode>(string.Format("Alpha{0}", i + 1), out keyCode))
+            {
+                if (_dicKeycodeAction.ContainsKey(keyCode))
+                {
+                    _dicKeycodeAction[keyCode] = () =>
+                    {
+                        OnClickAction?.Invoke(option._function, option._para);
+                        _dicKeycodeAction[keyCode] = null;
+                    };
+                }
+                else
+                {
+                    Debug.LogErrorFormat("错误注册的按键为Alpha{0}", i + 1);
+                }
+            }
+            else
+            {
+                Debug.LogErrorFormat("解析到错误的keycode:Alpha{0}", i + 1);
+            }
+            //MyGameManager.Instance.Regist(Enum.Parse<KeyCode>(string.Format("Alpha{0}", i + 1)),
+            //    () =>
+            //    {
+            //        OnClickAction?.Invoke(option._function, option._para);
+            //    });
         }
         OnEndAction?.Invoke();
     }
@@ -57,5 +89,8 @@ public class UIDialogueWindow : MyBaseWindow
     {
         _textField.text = string.Empty;
     }
-
+    private void KeycodeAction(KeyCode keyCode)
+    {
+        _dicKeycodeAction[keyCode]?.Invoke();
+    }
 }

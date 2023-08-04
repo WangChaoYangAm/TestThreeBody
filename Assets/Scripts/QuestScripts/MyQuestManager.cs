@@ -126,13 +126,20 @@ public class MyQuestManager : MySingle<MyQuestManager>
     }
     public void UpdateQuestStatus(EQuestStatus questStatus, string questId)
     {
+        if (!_dicIdToQuests.ContainsKey(questId))
+        {
+            Debug.LogError("错误指定了要完成的任务id：" + questId);
+            return;
+        }
         switch (questStatus)
         {
             case EQuestStatus.Receiving:
             case EQuestStatus.Submit:
             case EQuestStatus.Abort:
-                if (_dicIdToQuests.ContainsKey(questId))
-                    _dicIdToQuests[questId].ForceChangeStatus(questStatus);
+                _dicIdToQuests[questId].ForceChangeStatus(questStatus);
+                break;
+            case EQuestStatus.Complete:
+                _dicIdToQuests[questId].MaxAmount();
                 break;
             default: Debug.Log("目标状态并非为允许的改变范围：" + questStatus); break;
         }

@@ -65,14 +65,12 @@ public class MyQuestBase
                 MyQuestManager.Instance.AddAction(true, _objectiveType, OnEndOperate);
                 break;
             case EQuestStatus.Complete:
-                //MyQuestManager.Instance.AddAction(false, _objectiveType, OnEndOperate);
-                //其实应该切换状态的，但配置文件中的相关配置有问题，所以暂时采用不更新状态
+                MyQuestManager.Instance.AddAction(false, _objectiveType, OnEndOperate);
                 MyQuestManager.Instance.NextQuests();
                 break;
             case EQuestStatus.Failed:
                 MyQuestManager.Instance.AddAction(false, _objectiveType, OnEndOperate);
                 break;
-
             case EQuestStatus.Submit:
                 if (_questStatus != EQuestStatus.Complete && _questStatus != EQuestStatus.Failed)
                     Debug.LogError("要提交的任务，状态存在问题，请检查");
@@ -86,6 +84,14 @@ public class MyQuestBase
     public virtual void ForceChangeStatus(EQuestStatus status)
     {
         OnChangeQuestStatus(status);
+    }
+    /// <summary>
+    /// 外部调用 从而自动更新任务目标数量并完成任务
+    /// </summary>
+    public virtual void MaxAmount()
+    {
+        //因目前无任务目标的最大值配置，故暂时使用1未目标值
+        UpdateOperateAmount(_objectiveId, 1);
     }
     /// <summary>
     /// 任务更新操作 用于接收触发类型及更新数量

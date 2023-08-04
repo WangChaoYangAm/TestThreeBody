@@ -25,7 +25,7 @@ public class MyGameManager : MySingle<MyGameManager>
             {
                 if (Input.GetKeyDown(keyCode) && _dicKeyEvent.ContainsKey(keyCode))
                 {
-                    _dicKeyEvent[keyCode]();
+                    _dicKeyEvent[keyCode]?.Invoke();
                 }
             }
         }
