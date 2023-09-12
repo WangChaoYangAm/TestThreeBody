@@ -69,7 +69,9 @@ public enum EModule
 public enum EWindowUI
 {
     UIDialogue,
-    UIQuests
+    UIQuests,
+    UIPackage,
+
 }
 
 public class Tags
