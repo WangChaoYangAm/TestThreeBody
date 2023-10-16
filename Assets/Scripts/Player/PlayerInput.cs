@@ -8,6 +8,7 @@ public class PlayerInput : MonoBehaviour
     public string _keyDownp = "s";
     public string _keyLeft = "a";
     public string _keyRight = "d";
+    public string _keyRun = "left shift";
 
     public float Dup;
     public float Dright;
@@ -21,7 +22,8 @@ public class PlayerInput : MonoBehaviour
     [SerializeField]
     private float _valChange;//Æ½»¬·ù¶È
 
-    public bool _inputEnable= true;
+    public bool _inputEnable = true;
+    public bool _isRun;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,15 +35,31 @@ public class PlayerInput : MonoBehaviour
     {
         _targetDup = (Input.GetKey(_keyUp) ? 1f : 0) - (Input.GetKey(_keyDownp) ? 1f : 0);
         _targetDright = (Input.GetKey(_keyRight) ? 1f : 0) - (Input.GetKey(_keyLeft) ? 1f : 0);
-        if(!_inputEnable)
+        if (!_inputEnable)
         {
             _targetDup = 0;
             _targetDright = 0;
         }
         Dup = Mathf.SmoothDamp(Dup, _targetDup, ref _velocityDup, _valChange);
-        Dright = Mathf.SmoothDamp(Dright,_targetDright, ref _velocityDright, _valChange);
+        Dright = Mathf.SmoothDamp(Dright, _targetDright, ref _velocityDright, _valChange);
 
-        Dmag = Mathf.Sqrt(Dup * Dup) + (Dright * Dright);
-        Dvect = Dright * transform.right + Dup * transform.forward;
+        Vector2 tmpAxis = SquareToCircle(new Vector2(Dright, Dup));
+        //Vector2 tmpAxis = new Vector2(Dright, Dup);
+        float Dright2 = tmpAxis.x;
+        float Dup2 = tmpAxis.y;
+
+        Dmag = Mathf.Sqrt(Dup2 * Dup2 + Dright2 * Dright2);
+        Dvect = Dright2 * transform.right + Dup2 * transform.forward;
+
+        _isRun = Input.GetKey(_keyRun);
+
+    }
+
+    private Vector2 SquareToCircle(Vector2 input)
+    {
+        Vector2 output = Vector2.zero;
+        output.x = input.x * Mathf.Sqrt(1 - (input.y * input.y) / 2.0f);
+        output.y = input.y * Mathf.Sqrt(1 - (input.x * input.x) / 2.0f);
+        return output;
     }
 }
