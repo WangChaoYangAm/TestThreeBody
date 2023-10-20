@@ -9,6 +9,7 @@ public class PlayerInput : MonoBehaviour
     public string _keyLeft = "a";
     public string _keyRight = "d";
     public string _keyRun = "left shift";
+    public string _keyJump = "space";
 
     public float Dup;
     public float Dright;
@@ -24,12 +25,14 @@ public class PlayerInput : MonoBehaviour
 
     public bool _inputEnable = true;
     public bool _isRun;
-    // Start is called before the first frame update
-    void Start()
+    public bool _isJump;
+    private bool _isLastJump;
+
+    private void Start()
     {
-
+        _isJump = false;
+        _isLastJump = false;
     }
-
     // Update is called once per frame
     void Update()
     {
@@ -52,7 +55,14 @@ public class PlayerInput : MonoBehaviour
         Dvect = Dright2 * transform.right + Dup2 * transform.forward;
 
         _isRun = Input.GetKey(_keyRun);
-
+        bool isNewJump = Input.GetKey(_keyJump);
+        if (isNewJump != _isLastJump && isNewJump == true)
+        {
+            _isJump = true;
+        }
+        else
+            _isJump = false;
+        _isLastJump = isNewJump;
     }
 
     private Vector2 SquareToCircle(Vector2 input)

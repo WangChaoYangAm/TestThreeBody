@@ -24,7 +24,7 @@ public class ActorController : MonoBehaviour
     void Update()
     {
         _aniPlayer.SetFloat(MyConstDefine.PLAYER_FORWARD, _playerInput.Dmag * Mathf.Lerp(_aniPlayer.GetFloat(MyConstDefine.PLAYER_FORWARD), _playerInput._isRun ? _runSpeed : 1f, 0.5f));
-
+        if (_playerInput._isJump) _aniPlayer.SetTrigger(MyConstDefine.PLAYER_JUMP);
         if (_playerInput.Dmag > 0.1f)//若小于该阈值说明松手了
         {
             _model.transform.forward = Vector3.Slerp(_model.transform.forward, _playerInput.Dvect, 0.3f);
@@ -35,8 +35,17 @@ public class ActorController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //_rigidbody.position += _movingVect * Time.fixedDeltaTime;
-        //_rigidbody.velocity = new Vector3(_movingVect.x, _rigidbody.velocity.y, _movingVect.z);
+        _rigidbody.position += _movingVect * Time.fixedDeltaTime;
+        _rigidbody.velocity = new Vector3(_movingVect.x, _rigidbody.velocity.y, _movingVect.z);
+
+    }
+    void OnJumpEnter()
+    {
+        Debug.Log("Jump");
+    }
+    void OnJumpExit()
+    {
+        Debug.Log("JumpDown");
 
     }
 }

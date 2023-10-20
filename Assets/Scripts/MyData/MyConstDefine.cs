@@ -5,4 +5,5 @@ using UnityEngine;
 public class MyConstDefine
 {
     public const string PLAYER_FORWARD = "Forward";
+    public const string PLAYER_JUMP = "Jump";
 }
