@@ -8,16 +8,28 @@ public class ActorController : MonoBehaviour
     public PlayerInput _playerInput;
     public float _walkSpeed;
     public float _runSpeed = 2;
+    public float _jumpVelocity = 2;
     [SerializeField]
     private Animator _aniPlayer;
     private Rigidbody _rigidbody;
-    private Vector3 _movingVect = new Vector3(0, 0, 1f);
+    private Vector3 _vecPlanar = new Vector3(0, 0, 1f);//平面的移动
+    private Vector3 _vecThurst ;//跳跃的冲量
+    private bool _isLockPlanar ;
+
+    private MySensorOnGround _sensorOnGround;
+    //private MyFSMOnExit _fsmOnExit;
     // Start is called before the first frame update
     void Awake()
     {
         _playerInput = GetComponent<PlayerInput>();
         _aniPlayer = _model.GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody>();
+        _sensorOnGround = GetComponentInChildren<MySensorOnGround>();
+        _sensorOnGround.Init(OnGround);
+        //_fsmOnExit = _aniPlayer.GetComponent<MyFSMOnExit>();
+        //_fsmOnExit.AddEvent(OnGroundEnter);
+        _isLockPlanar = false;
+        _playerInput.enabled = true;
     }
 
     // Update is called once per frame
@@ -29,23 +41,41 @@ public class ActorController : MonoBehaviour
         {
             _model.transform.forward = Vector3.Slerp(_model.transform.forward, _playerInput.Dvect, 0.3f);
         }
-
-        _movingVect = _playerInput.Dmag * _model.transform.forward * _walkSpeed * (_playerInput._isRun ? _runSpeed : 1f);
+        if (_isLockPlanar == false)
+            _vecPlanar = _playerInput.Dmag * _model.transform.forward * _walkSpeed * (_playerInput._isRun ? _runSpeed : 1f);
     }
 
     private void FixedUpdate()
     {
-        _rigidbody.position += _movingVect * Time.fixedDeltaTime;
-        _rigidbody.velocity = new Vector3(_movingVect.x, _rigidbody.velocity.y, _movingVect.z);
-
+        _rigidbody.position += _vecPlanar * Time.fixedDeltaTime;
+        _rigidbody.velocity = new Vector3(_vecPlanar.x, _rigidbody.velocity.y, _vecPlanar.z) + _vecThurst;
+        _vecThurst = Vector3.zero;//增加了冲量后立刻归零
     }
     void OnJumpEnter()
     {
         Debug.Log("Jump");
+        _vecThurst = new Vector3(0, _jumpVelocity, 0);
+        _playerInput.enabled = false;
+        _isLockPlanar = true;
     }
-    void OnJumpExit()
-    {
-        Debug.Log("JumpDown");
+    //void OnJumpExit()
+    //{
+    //    Debug.Log("JumpDown");
 
+    //}
+    void OnGround(bool isOnGround)
+    {
+        _aniPlayer.SetBool(MyConstDefine.PLAYER_ONGROUND, isOnGround);
+    }
+    void OnGroundEnter()
+    {
+        _playerInput.enabled = true;
+        _isLockPlanar = false;
+    }
+
+    void OnFallEnter()
+    {
+        _playerInput.enabled = false;
+        _isLockPlanar = true;
     }
 }
