@@ -9,7 +9,7 @@ public class MyFSMOnEnter : StateMachineBehaviour
     {
         foreach (var signal in OnEnterMsg)
         {
-            animator.SendMessageUpwards(signal);
+            animator.gameObject.SendMessageUpwards(signal);
         }
     }
 }

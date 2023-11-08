@@ -18,7 +18,7 @@ public class MyFSMOnExit : StateMachineBehaviour
         //OnExitAction?.Invoke();
         foreach (var signal in OnExitMsg)
         {
-            animator.SendMessageUpwards(signal);
+            animator.gameObject.SendMessageUpwards(signal);
         }
     }
 }

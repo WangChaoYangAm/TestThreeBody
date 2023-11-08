@@ -29,17 +29,17 @@ public class MySensorOnGround : MonoBehaviour
         var collidersOutput = Physics.OverlapCapsule(_point1, _point2, _radius, _maskLayer);
         if (collidersOutput.Length>0)
         {
-            Debug.Log("OnGround");
+            //Debug.Log("OnGround");
             OnGroundAction?.Invoke(true);
-            //foreach (var collider in collidersOutput)
-            //{
-            //    if(collider.com)
-            //}
         }
         else
         {
             OnGroundAction?.Invoke(false);
-
         }
+    }
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawCube(_point1, Vector3.one);
+        //Gizmos.DrawCube(_point2, Vector3.one);
     }
 }

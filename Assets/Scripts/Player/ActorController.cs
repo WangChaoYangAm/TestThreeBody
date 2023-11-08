@@ -9,12 +9,14 @@ public class ActorController : MonoBehaviour
     public float _walkSpeed;
     public float _runSpeed = 2;
     public float _jumpVelocity = 2;
+    public float _rollVelocity = 1;
+    public float _thresholdRoll = 2;//前滚翻判定速度阈值
     [SerializeField]
     private Animator _aniPlayer;
     private Rigidbody _rigidbody;
     private Vector3 _vecPlanar = new Vector3(0, 0, 1f);//平面的移动
-    private Vector3 _vecThurst ;//跳跃的冲量
-    private bool _isLockPlanar ;
+    private Vector3 _vecThurst;//跳跃的冲量
+    private bool _isLockPlanar;
 
     private MySensorOnGround _sensorOnGround;
     //private MyFSMOnExit _fsmOnExit;
@@ -29,14 +31,23 @@ public class ActorController : MonoBehaviour
         //_fsmOnExit = _aniPlayer.GetComponent<MyFSMOnExit>();
         //_fsmOnExit.AddEvent(OnGroundEnter);
         _isLockPlanar = false;
-        _playerInput.enabled = true;
+        _playerInput._inputEnable = true;
     }
 
     // Update is called once per frame
     void Update()
     {
         _aniPlayer.SetFloat(MyConstDefine.PLAYER_FORWARD, _playerInput.Dmag * Mathf.Lerp(_aniPlayer.GetFloat(MyConstDefine.PLAYER_FORWARD), _playerInput._isRun ? _runSpeed : 1f, 0.5f));
-        if (_playerInput._isJump) _aniPlayer.SetTrigger(MyConstDefine.PLAYER_JUMP);
+        if (_rigidbody.velocity.magnitude > _thresholdRoll)
+        {
+            _aniPlayer.SetTrigger(MyConstDefine.PLAYER_ROLL);
+        }
+
+        if (_playerInput._isJump)
+        {
+            //Debug.Log("条跳跳");
+            _aniPlayer.SetTrigger(MyConstDefine.PLAYER_JUMP);
+        }
         if (_playerInput.Dmag > 0.1f)//若小于该阈值说明松手了
         {
             _model.transform.forward = Vector3.Slerp(_model.transform.forward, _playerInput.Dvect, 0.3f);
@@ -55,27 +66,33 @@ public class ActorController : MonoBehaviour
     {
         Debug.Log("Jump");
         _vecThurst = new Vector3(0, _jumpVelocity, 0);
-        _playerInput.enabled = false;
+        _playerInput._inputEnable = false;
         _isLockPlanar = true;
     }
-    //void OnJumpExit()
-    //{
-    //    Debug.Log("JumpDown");
+    void OnJumpExit()
+    {
+        Debug.Log("JumpDown");
 
-    //}
+    }
     void OnGround(bool isOnGround)
     {
         _aniPlayer.SetBool(MyConstDefine.PLAYER_ONGROUND, isOnGround);
     }
     void OnGroundEnter()
     {
-        _playerInput.enabled = true;
+        _playerInput._inputEnable = true;
         _isLockPlanar = false;
     }
 
     void OnFallEnter()
     {
-        _playerInput.enabled = false;
+        _playerInput._inputEnable = false;
+        _isLockPlanar = true;
+    }
+    void OnRollEnter()
+    {
+        _vecThurst = new Vector3(0, _rollVelocity, 0);
+        _playerInput._inputEnable = false;
         _isLockPlanar = true;
     }
 }

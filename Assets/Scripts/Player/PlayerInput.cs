@@ -25,14 +25,9 @@ public class PlayerInput : MonoBehaviour
 
     public bool _inputEnable = true;
     public bool _isRun;
-    public bool _isJump;
-    private bool _isLastJump;
+    public bool _isJump = false;
+    private bool _isLastJump = false;
 
-    private void Start()
-    {
-        _isJump = false;
-        _isLastJump = false;
-    }
     // Update is called once per frame
     void Update()
     {
