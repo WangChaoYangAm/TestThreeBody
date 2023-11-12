@@ -11,10 +11,19 @@ public class PlayerInput : MonoBehaviour
     public string _keyRun = "left shift";
     public string _keyJump = "space";
 
+    public string _keyJRight;
+    public string _keyJLeft;
+    public string _keyJUp;
+    public string _keyJDown;
+
     public float Dup;
     public float Dright;
     public float Dmag;//归一化向量长度？
     public Vector3 Dvect;
+
+    //摄像机的旋转
+    public float Jup;
+    public float Jright;
 
     private float _targetDup;
     private float _targetDright;
@@ -33,6 +42,8 @@ public class PlayerInput : MonoBehaviour
     {
         _targetDup = (Input.GetKey(_keyUp) ? 1f : 0) - (Input.GetKey(_keyDownp) ? 1f : 0);
         _targetDright = (Input.GetKey(_keyRight) ? 1f : 0) - (Input.GetKey(_keyLeft) ? 1f : 0);
+        Jup = Input.GetAxis("Mouse X");
+        Jright = Input.GetAxis("Mouse Y");
         if (!_inputEnable)
         {
             _targetDup = 0;
