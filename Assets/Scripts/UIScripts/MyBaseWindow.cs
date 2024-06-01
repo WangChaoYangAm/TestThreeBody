@@ -11,10 +11,17 @@ public enum EWindowType
 }
 public class MyBaseWindow : MonoBehaviour
 {
+    public string _windowName;
     public EWindowType _windowType;
+
+    private void Start()
+    {
+        _windowName = this.GetType().ToString();
+    }
 
     public virtual void ShowWindow(bool isShow)
     {
         this.gameObject.SetActive(isShow);
     }
+
 }

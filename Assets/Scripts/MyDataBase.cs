@@ -79,6 +79,15 @@ public class Tags
     public const string PLAYER = "Player";
     public const string MYSINGLE_ROOT = "MySingleRoot";
 }
-
-
+public class MyCommand
+{
+    /// <summary>
+    /// 打开窗口
+    /// </summary>
+    public const string OPEN_VIEW = "OPEN_VIEW";
+    /// <summary>
+    /// 关闭窗口
+    /// </summary>
+    public const string HIDE_VIEW = "HIDE_VIEW";
+}
 

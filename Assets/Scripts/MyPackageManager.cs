@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class MyPackageManager : MySingle<MyPackageManager>
 {
-    private UIPackageWindow _packageWindow;
+    //private UIPackageWindow _packageWindow;
     public Dictionary<string, int> _dicItem = new Dictionary<string, int>();
     // Start is called before the first frame update
     void Start()
     {
-        _packageWindow = (UIPackageWindow)UIManager.Instance.LoadWindow(EWindowUI.UIPackage);
+        //_packageWindow = (UIPackageWindow)UIManager.Instance.LoadWindow(EWindowUI.UIPackage);
+        MyGameManager.Instance.Regist(KeyCode.B, OpenPackage);
     }
 
     public void AddItem(bool isAdd, string itemId, int count)
@@ -38,5 +39,9 @@ public class MyPackageManager : MySingle<MyPackageManager>
             }
         }
 
+    }
+    void OpenPackage()
+    {
+        MyFacade.SendMsg(MyCommand.OPEN_VIEW, new MyResponseData { _data = EWindowUI.UIPackage });
     }
 }

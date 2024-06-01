@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class UIManager : MySingle<UIManager>
+public class UIManager : MySingle<UIManager>, Imsg
 {
     public Dictionary<string, MyBaseWindow> _allWindowDic = new Dictionary<string, MyBaseWindow>();
     [SerializeField]
     private Transform _rootNormal, _rootFixed, _rootPop, _rootTop;
+
+    public void Bind()
+    {
+        MyFacade.Register(MyCommand.OPEN_VIEW, this);
+    }
 
     public MyBaseWindow LoadWindow(EWindowUI eWindowUI)
     {
@@ -40,9 +45,25 @@ public class UIManager : MySingle<UIManager>
             rect.anchoredPosition3D = Vector3.zero;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
+            rect.localScale = Vector3.one;
             _allWindowDic.Add(windowNmae, windowBase);
         }
         return windowBase;
     }
 
+    public void RecieveMsg(MyResponseData data)
+    {
+        switch (data._actionName)
+        {
+            case MyCommand.OPEN_VIEW:
+            case MyCommand.HIDE_VIEW:
+                LoadWindow((EWindowUI)data._data).ShowWindow(data._actionName == MyCommand.OPEN_VIEW);
+                break;
+        }
+    }
+
+    public void RemoveBind()
+    {
+        throw new System.NotImplementedException();
+    }
 }

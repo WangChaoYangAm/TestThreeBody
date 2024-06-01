@@ -40,6 +40,8 @@ public class MyGameManager : MySingle<MyGameManager>
         //预加载对话界面,暂定无对话，初次加载直接隐藏对话UI
         UIManager.Instance.LoadWindow(EWindowUI.UIDialogue).ShowWindow(false);
 
+        MyLoadDataManager.Instance.LoadItemBaseList();
+
     }
 
     public void UpdateQuestsState(EObjectiveType objectiveType, string objectiveNmae, int objectiveAmount)

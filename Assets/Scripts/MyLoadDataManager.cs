@@ -5,14 +5,18 @@ using UnityEngine;
 using System;
 using System.Reflection;
 using System.IO;
+using DG.Tweening.Plugins.Core.PathCore;
+using System.Linq;
 
 public class MyLoadDataManager : MySingle<MyLoadDataManager>
 {
     public string PATH_DIALOGUE = Application.streamingAssetsPath + "/NPC_Dialogue_Group/Excels/";
     public string PATH_QUESTS = Application.streamingAssetsPath + "/QuestsFile/Excels/";
     public string PATH_NPC_DIALOGUE_CONFIG = Application.streamingAssetsPath + "/NPC_Dialogue_AllConfigs/Excels/NPC_Dialogue.xlsx";
+    public string PATH_ITEMS = Application.streamingAssetsPath + "/NPC_ItemBase/Excels/AllItemConfig.xlsx";
     private Dictionary<string, List<MyQuestBase>> _dicQuests = new Dictionary<string, List<MyQuestBase>>();
     private Dictionary<string, Npc_DialogueConfig> _dicNpcDialogueConfig = new Dictionary<string, Npc_DialogueConfig>();
+    private Dictionary<string, MyItemBase> _dicItembase = new Dictionary<string, MyItemBase>();
     public List<MyDialogueBase> LoadDialogueList(string key)
     {
         List<MyDialogueBase> dialogueList = new List<MyDialogueBase>();
@@ -87,12 +91,7 @@ public class MyLoadDataManager : MySingle<MyLoadDataManager>
             Debug.LogError("解析不到目标文件," + path);
             return null;
         }
-
-        var fields = GetFieldInfos("MyQuestBase");
-        //foreach (var field in fields)
-        //{
-        //    Debug.Log(field.Name);
-        //}
+        //var fields = GetFieldInfos("MyQuestBase");
         DataSet dataset = ExcelRead.ReadExcel(path);
         Dictionary<string, int> dicTitle = new Dictionary<string, int>();
         for (int i = 0; i < dataset.Tables[0].Rows.Count; i++)
@@ -206,10 +205,60 @@ public class MyLoadDataManager : MySingle<MyLoadDataManager>
         }
         return _dicNpcDialogueConfig.ContainsKey(npcId) ? _dicNpcDialogueConfig[npcId] : null;
     }
+    #region 加载道具数据
+    public void LoadItemBaseList()
+    {
+        _dicItembase.Clear();
+        DataSet dataset = ExcelRead.ReadExcel(PATH_ITEMS);
+        var dicTitle = GetTitleToIndexDic(dataset);
+        var fieldsInfo = GetFieldInfos("MyItemBase");
+        for (int i = 2; i < dataset.Tables[0].Rows.Count; i++)
+        {
+            var table = dataset.Tables[0].Rows[i];
+            MyItemBase @base = new MyItemBase()
+            {
+                _itemId = table[dicTitle["_itemId"]].ToString(),
+                _itemName = table[dicTitle["_itemName"]].ToString(),
+                _itemDes = table[dicTitle["_itemDes"]].ToString(),
+                _itemType = (ItemType)Enum.Parse(typeof(ItemType), table[dicTitle["_itemId"]].ToString()),
+                _itemCount_max = int.Parse(table[dicTitle["_itemCount_max"]].ToString()),
+            };
+            _dicItembase.Add(@base._itemId, @base);
+        }
+    }
+    public MyItemBase LoadItemBase(string itemId)
+    {
+        if (!_dicItembase.ContainsKey(itemId))
+            LoadItemBaseList();
+        return _dicItembase[itemId];
+    }
+    #endregion
     public FieldInfo[] GetFieldInfos(string key)
     {
         Type type = Type.GetType(key);
         return type.Assembly.CreateInstance(type.FullName).GetType().GetFields();
     }
-
+    /// <summary>
+    /// 解析出所有的excel中的变量名称对应的列的序号，以便解析，部分表格数据还未统一
+    /// </summary>
+    /// <returns></returns>
+    public Dictionary<string, int> GetTitleToIndexDic(DataSet dataset)
+    {
+        Dictionary<string, int> dicTitle = new Dictionary<string, int>();
+        //第一行默认都是变量名
+        for (int j = 0; j < dataset.Tables[0].Columns.Count; j++)
+        {
+            //记载excel表头及对应的列的序号
+            int t = j;
+            string tmpKey = dataset.Tables[0].Rows[0][j].ToString();
+            if (!string.IsNullOrEmpty(tmpKey))
+            {
+                if (!dicTitle.ContainsKey(tmpKey))
+                    dicTitle.Add(tmpKey, t);
+                else
+                    Debug.LogError("excel中存在重复键：" + tmpKey);
+            }
+        }
+        return dicTitle;
+    }
 }
