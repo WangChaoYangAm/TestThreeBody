@@ -11,6 +11,7 @@ public enum ItemType
 /// <summary>
 /// 基类负责记录不会更改的数据
 /// </summary>
+[System.Serializable]
 public class MyItemBase
 {
     public string _itemId;

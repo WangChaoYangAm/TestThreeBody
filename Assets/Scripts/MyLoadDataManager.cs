@@ -7,6 +7,7 @@ using System.Reflection;
 using System.IO;
 using DG.Tweening.Plugins.Core.PathCore;
 using System.Linq;
+using Unity.VisualScripting;
 
 public class MyLoadDataManager : MySingle<MyLoadDataManager>
 {
@@ -230,7 +231,11 @@ public class MyLoadDataManager : MySingle<MyLoadDataManager>
     {
         if (!_dicItembase.ContainsKey(itemId))
             LoadItemBaseList();
-        return _dicItembase[itemId];
+        var source = _dicItembase[itemId];
+        Debug.Log(source._itemDes);
+        MyItemBase res = MyUtils.TransReflection<MyItemBase, MyItemBase>(source);
+
+        return res;
     }
     #endregion
     public FieldInfo[] GetFieldInfos(string key)

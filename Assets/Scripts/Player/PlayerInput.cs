@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -37,6 +38,9 @@ public class PlayerInput : MonoBehaviour
     public bool _isJump = false;
     private bool _isLastJump = false;
 
+    private bool _isHitItem;
+    private Vector3 _screenCenter = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f);
+
     // Update is called once per frame
     void Update()
     {
@@ -69,6 +73,24 @@ public class PlayerInput : MonoBehaviour
         else
             _isJump = false;
         _isLastJump = isNewJump;
+
+        Ray ray = Camera.main.ScreenPointToRay(_screenCenter);
+        if(Physics.Raycast(ray,out RaycastHit hit))
+        {
+            if(hit.collider.gameObject.layer == LayerMask.NameToLayer(Layers.ITEM))
+            {
+                _isHitItem = true;
+                if (Input.GetKeyUp(KeyCode.F))
+                {
+                    var trrigerItem = hit.collider.GetComponent<Trigger_Item>();
+                    MyFacade.SendMsg(MyCommand.ADD_ITEM, trrigerItem.GetItemData);
+                }
+            }
+            else
+            {
+                _isHitItem = false;
+            }
+        }
     }
 
     private Vector2 SquareToCircle(Vector2 input)

@@ -10,10 +10,10 @@ public class Trigger_Item : MonoBehaviour
     public string _itemId;
     public string _itemName;
     private MyItemBase _itemBase;
-
+    public MyItemBase GetItemData { get { return _itemBase; } }
     private void Start()
     {
-        if (_itemBase == null && !string.IsNullOrEmpty(_itemId))
+        if ( !string.IsNullOrEmpty(_itemId))
         {
             UpdateItem(MyLoadDataManager.Instance.LoadItemBase(_itemId));
         }

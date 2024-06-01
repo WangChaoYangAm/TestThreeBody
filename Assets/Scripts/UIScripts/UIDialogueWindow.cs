@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.UIElements;
 
-public class UIDialogueWindow : MyBaseWindow
+public class UIDialogueWindow : MyBaseWindow, Imsg
 {
     [SerializeField]
     private RectTransform _rootDialogue;
@@ -17,6 +17,25 @@ public class UIDialogueWindow : MyBaseWindow
     public Action<EDialogueFunc, string> OnClickAction;
     public Action OnEndAction;
     private Dictionary<KeyCode, Action> _dicKeycodeAction = new Dictionary<KeyCode, Action>();
+
+    private void Awake()
+    {
+        Bind();
+    }
+
+    public void Bind()
+    {
+        //MyFacade.Register(MyCommand.OPEN_VIEW,this);
+        //MyFacade.Register(MyCommand.HIDE_VIEW,this);
+    }
+
+    public void RemoveBind()
+    {
+    }
+    public void RecieveMsg(string command, object data)
+    {
+
+    }
     public void Init(Action EndAction, Action<EDialogueFunc, string> ClickAction)
     {
         ObjectPool.Instance.SetPrefab(_preCellDialogue);
@@ -93,4 +112,6 @@ public class UIDialogueWindow : MyBaseWindow
     {
         _dicKeycodeAction[keyCode]?.Invoke();
     }
+
+
 }

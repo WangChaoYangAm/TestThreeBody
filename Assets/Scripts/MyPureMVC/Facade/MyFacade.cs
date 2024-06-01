@@ -7,24 +7,20 @@ public class MyFacade
 {
     //static Dictionary<string, List<Imsg>> _dicImsgObj = new Dictionary<string, List<Imsg>>();
     static Dictionary<string, List<Imsg>> _dicImsgObj = new Dictionary<string, List<Imsg>>();
-    public static void Register(string name,Imsg imsg)
+    public static void Register(string name, Imsg imsg)
     {
-        if(!_dicImsgObj.ContainsKey(name))
-        _dicImsgObj.Add(name,new List<Imsg>());
+        if (!_dicImsgObj.ContainsKey(name))
+            _dicImsgObj.Add(name, new List<Imsg>());
         _dicImsgObj[name].Add(imsg);
 
     }
-    public static void SendMsg(string myCommand, MyResponseData data)
+    public static void SendMsg(string command, object data)
     {
-        foreach (var item in _dicImsgObj)
+        if (_dicImsgObj.TryGetValue(command, out var listMsgs))
         {
-            if (item.Key == myCommand)
+            for (int i = 0; i < listMsgs.Count; i++)
             {
-                for (int i = 0; i < item.Value.Count; i++)
-                {
-                    item.Value[i].RecieveMsg(data);
-                }
-                
+                listMsgs[i].RecieveMsg(command, data);
             }
         }
     }

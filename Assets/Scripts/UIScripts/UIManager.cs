@@ -8,10 +8,34 @@ public class UIManager : MySingle<UIManager>, Imsg
     public Dictionary<string, MyBaseWindow> _allWindowDic = new Dictionary<string, MyBaseWindow>();
     [SerializeField]
     private Transform _rootNormal, _rootFixed, _rootPop, _rootTop;
-
+    [SerializeField]
+    private string _questStartId;
+    protected override void Awake()
+    {
+        base.Awake();
+        Bind();
+    }
     public void Bind()
     {
+        MyFacade.Register(MyCommand.INIT_GAME_UI, this);
         MyFacade.Register(MyCommand.OPEN_VIEW, this);
+        MyFacade.Register(MyCommand.HIDE_VIEW, this);
+    }
+    void InitWindows()
+    {
+
+        ////预加载对话界面,暂定无对话，初次加载直接隐藏对话UI
+        //UIManager.Instance.LoadWindow(EWindowUI.UIDialogue).ShowWindow(false);
+        MyFacade.SendMsg(MyCommand.OPEN_VIEW, new OpenViewConfig() { _eWindowUI = EWindowUI.UIQuests });
+        MyFacade.SendMsg(MyCommand.INIT_DATA_QUEST, _questStartId);
+
+        //初始化所有不需要传入数据的UI的数据初始化
+        MyFacade.SendMsg(MyCommand.OPEN_VIEW, new OpenViewConfig() { _eWindowUI = EWindowUI.UIPlayerPackage });
+        MyFacade.SendMsg(MyCommand.INIT_GAME_UI_DATA, null);
+
+        //隐藏需要隐藏的UI
+        MyFacade.SendMsg(MyCommand.HIDE_VIEW, new OpenViewConfig() { _eWindowUI = EWindowUI.UIPlayerPackage });
+
     }
 
     public MyBaseWindow LoadWindow(EWindowUI eWindowUI)
@@ -51,19 +75,27 @@ public class UIManager : MySingle<UIManager>, Imsg
         return windowBase;
     }
 
-    public void RecieveMsg(MyResponseData data)
+    public void RecieveMsg(string command, object data)
     {
-        switch (data._actionName)
+        switch (command)
         {
+            case MyCommand.INIT_GAME_UI:
+                InitWindows();
+                break;
             case MyCommand.OPEN_VIEW:
+                var configOpenView = (OpenViewConfig)data;
+                LoadWindow(configOpenView._eWindowUI).ShowWindow(true);
+                break;
             case MyCommand.HIDE_VIEW:
-                LoadWindow((EWindowUI)data._data).ShowWindow(data._actionName == MyCommand.OPEN_VIEW);
+                //LoadWindow((EWindowUI)data._data).ShowWindow(data._actionName == MyCommand.OPEN_VIEW);
+                var configHideView = (OpenViewConfig)data;
+                LoadWindow(configHideView._eWindowUI).ShowWindow(false);
                 break;
         }
     }
 
     public void RemoveBind()
     {
-        throw new System.NotImplementedException();
+        //throw new System.NotImplementedException();
     }
 }

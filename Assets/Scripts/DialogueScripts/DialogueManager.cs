@@ -44,6 +44,7 @@ public class DialogueManager : MySingle<DialogueManager>
         _dialogueGroupList = MyLoadDataManager.Instance.LoadDialogueList(key);
         if (!_dialogueWindow)
         {
+            MyFacade.SendMsg(MyCommand.OPEN_VIEW, new OpenViewConfig() { _eWindowUI = EWindowUI.UIDialogue });
             _dialogueWindow = UIManager.Instance.LoadWindow(EWindowUI.UIDialogue) as UIDialogueWindow;
             _dialogueWindow.Init(AutoNextDialogue, SwichDialogueList);
 
@@ -76,7 +77,8 @@ public class DialogueManager : MySingle<DialogueManager>
                 {
                     DialogueTrigger();
                     //对话结束
-                    _dialogueWindow.ShowWindow(false);
+                    //_dialogueWindow.ShowWindow(false);
+                    MyFacade.SendMsg(MyCommand.HIDE_VIEW, new MyResponseData() { _actionName = MyCommand.HIDE_VIEW, _data = EWindowUI.UIDialogue });
                     Debug.Log("对话结束");
                     _allowNextDialogue = false;
                     _dialogueWindow.ClearTextField();

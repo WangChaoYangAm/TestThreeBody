@@ -71,7 +71,7 @@ public enum EWindowUI
     UIDialogue,
     UIQuests,
     UIPackage,
-
+    UIPlayerPackage,
 }
 
 public class Tags
@@ -79,8 +79,25 @@ public class Tags
     public const string PLAYER = "Player";
     public const string MYSINGLE_ROOT = "MySingleRoot";
 }
+public class Layers
+{
+    public const string ITEM = "Item";
+}
+public class OpenViewConfig
+{
+    public EWindowUI _eWindowUI;
+    public object[] _datas; 
+}
 public class MyCommand
 {
+    /// <summary>
+    /// 初始化游戏的UI窗口 设置应该打开的窗口
+    /// </summary>
+    public const string INIT_GAME_UI = "INIT_GAME_UI";
+    /// <summary>
+    /// 通知UI进行数据初始化 暂时是不需要传入数据，自行初始化的部分
+    /// </summary>
+    public const string INIT_GAME_UI_DATA = "INIT_GAME_UI_DATA";
     /// <summary>
     /// 打开窗口
     /// </summary>
@@ -89,5 +106,13 @@ public class MyCommand
     /// 关闭窗口
     /// </summary>
     public const string HIDE_VIEW = "HIDE_VIEW";
+    /// <summary>
+    /// 初始化任务面板UI的数据
+    /// </summary>
+    public const string INIT_DATA_QUEST = "INIT_DATA_QUEST";
+    /// <summary>
+    /// 添加道具
+    /// </summary>
+    public const string ADD_ITEM = "ADD_ITEM";
 }
 

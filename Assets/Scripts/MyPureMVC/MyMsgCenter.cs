@@ -9,7 +9,7 @@ public interface Imsg
     ///// </summary>
     ///// <param name="data"></param>
     //void SendMsg(MyCommand myCommand ,object data);
-    void RecieveMsg(MyResponseData data);
+    void RecieveMsg(string command,object data);
     void Bind();
     void RemoveBind();
 

@@ -9,7 +9,6 @@ public class MyPackageManager : MySingle<MyPackageManager>
     // Start is called before the first frame update
     void Start()
     {
-        //_packageWindow = (UIPackageWindow)UIManager.Instance.LoadWindow(EWindowUI.UIPackage);
         MyGameManager.Instance.Regist(KeyCode.B, OpenPackage);
     }
 
@@ -42,6 +41,6 @@ public class MyPackageManager : MySingle<MyPackageManager>
     }
     void OpenPackage()
     {
-        MyFacade.SendMsg(MyCommand.OPEN_VIEW, new MyResponseData { _data = EWindowUI.UIPackage });
+        MyFacade.SendMsg(MyCommand.OPEN_VIEW,new OpenViewConfig { _eWindowUI = EWindowUI.UIPlayerPackage });
     }
 }

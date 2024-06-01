@@ -218,7 +218,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32b4b3dbe7ef2cf4eaf9e57a6c83f939, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _questStartId: 11
 --- !u!4 &151775920
 Transform:
   m_ObjectHideFlags: 0
@@ -916,6 +915,10 @@ PrefabInstance:
     - target: {fileID: 3856672652521118066, guid: b62abbb10d07cc5409f6d30c4deb57d5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3856672652521118067, guid: b62abbb10d07cc5409f6d30c4deb57d5, type: 3}
+      propertyPath: _questStartId
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 3856672652521118070, guid: b62abbb10d07cc5409f6d30c4deb57d5, type: 3}
       propertyPath: m_Name
